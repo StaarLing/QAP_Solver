@@ -65,9 +65,9 @@ namespace Main
                         // Создаем TextBox для ввода значения параметра
                         TextBox textBox = new TextBox();
                         textBox.Multiline = true;
-                        textBox.Location = new Point(label.Right-10, verticalOffset); // Располагаем TextBox справа от Label
+                        textBox.Location = new Point(label.Right+100, verticalOffset); // Располагаем TextBox справа от Label
                         textBox.Text = defaultValue.ToString(); // Устанавливаем значение по умолчанию
-
+                        textBox.Size = new Size(50, 20);
                         // Добавляем Label и TextBox на вкладку
                         newTab.Controls.Add(label);
                         newTab.Controls.Add(textBox);

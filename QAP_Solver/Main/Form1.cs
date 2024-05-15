@@ -12,11 +12,13 @@ namespace Main
 {
     public partial class Form1 : Form
     {
-
+        Point picLoc;
+        Size picSize;
         public Form1()
         {
             InitializeComponent();
-
+            picLoc = pictureBox1.Location;
+            picSize = pictureBox1.Size;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -97,6 +99,21 @@ namespace Main
         {
             pictureBox1.Visible = radioButton1.Checked;
             textBoxTask.Visible = radioButton2.Checked;
+        }
+
+        private void pictureBox1_DoubleClick(object sender, EventArgs e)
+        {
+
+            if(pictureBox1.Size != this.ClientSize)
+            {
+                pictureBox1.Size = this.ClientSize;
+                pictureBox1.Location = new Point(0, 0);
+            }
+            else
+            {
+                pictureBox1.Size = picSize;
+                pictureBox1.Location = picLoc;
+            }
         }
     }
 }
