@@ -27,6 +27,10 @@ namespace Main
         {
             return n;
         }
+        public Task GetTask()
+        {
+            return this;
+        }
         public Task(int n)
         {
             this.n = n;

@@ -10,6 +10,26 @@ namespace Main
     {
         List<int> Permutation = new List<int>();
 
+        public Agent(int n)
+        {
+            this.Permutation = new List<int>(n);
+        }
+        public Agent(List<int> permutation)
+        {
+            this.Permutation = permutation;
+        }
+        public List<int> GetPermutation()
+        {
+            return this.Permutation;
+        }
+        public void RandAgent()
+        {
+            this.Permutation = GenerateRandomPermutation(this.Permutation.Count);
+        }
+        public void UpdatePermutation(List<int> newPermutation)
+        {
+            this.Permutation = newPermutation;
+        }
         public double Fitness(Agent agent, Task task)
         {
             int n = task.GetN(); // Размерность задачи
@@ -40,6 +60,21 @@ namespace Main
             }
 
             return fitness;
+        }
+        private List<int> GenerateRandomPermutation(int n)
+        {
+            List<int> permutation = Enumerable.Range(0, n).ToList();
+            Random rng = new Random();
+            int k = n;
+            while (k > 1)
+            {
+                k--;
+                int randIndex = rng.Next(k + 1);
+                int value = permutation[randIndex];
+                permutation[randIndex] = permutation[k];
+                permutation[k] = value;
+            }
+            return permutation;
         }
     }
 }

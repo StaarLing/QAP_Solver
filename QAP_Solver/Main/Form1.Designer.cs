@@ -37,10 +37,9 @@
             this.toolStripMenuAboutQAP = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItemHelp = new System.Windows.Forms.ToolStripMenuItem();
             this.StartButton = new System.Windows.Forms.Button();
-            this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
+            this.checkedListBoxAlg = new System.Windows.Forms.CheckedListBox();
             this.groupBoxAlg = new System.Windows.Forms.GroupBox();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.label1 = new System.Windows.Forms.Label();
@@ -50,7 +49,8 @@
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.textBoxTask = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.checkedListBox2 = new System.Windows.Forms.CheckedListBox();
+            this.checkedListBoxSolve = new System.Windows.Forms.CheckedListBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.toolStrip1.SuspendLayout();
             this.groupBoxAlg.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -113,14 +113,14 @@
             // toolStripMenuAboutQAP
             // 
             this.toolStripMenuAboutQAP.Name = "toolStripMenuAboutQAP";
-            this.toolStripMenuAboutQAP.Size = new System.Drawing.Size(224, 26);
+            this.toolStripMenuAboutQAP.Size = new System.Drawing.Size(187, 26);
             this.toolStripMenuAboutQAP.Text = "О задаче QAP";
             this.toolStripMenuAboutQAP.Click += new System.EventHandler(this.toolStripMenuAboutQAP_Click);
             // 
             // toolStripMenuItemHelp
             // 
             this.toolStripMenuItemHelp.Name = "toolStripMenuItemHelp";
-            this.toolStripMenuItemHelp.Size = new System.Drawing.Size(224, 26);
+            this.toolStripMenuItemHelp.Size = new System.Drawing.Size(187, 26);
             this.toolStripMenuItemHelp.Text = "Помощь";
             // 
             // StartButton
@@ -133,15 +133,15 @@
             this.StartButton.UseVisualStyleBackColor = true;
             this.StartButton.Click += new System.EventHandler(this.button1_Click);
             // 
-            // checkedListBox1
+            // checkedListBoxAlg
             // 
-            this.checkedListBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.checkedListBoxAlg.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.checkedListBox1.CheckOnClick = true;
-            this.checkedListBox1.ColumnWidth = 50;
-            this.checkedListBox1.FormattingEnabled = true;
-            this.checkedListBox1.Items.AddRange(new object[] {
+            this.checkedListBoxAlg.CheckOnClick = true;
+            this.checkedListBoxAlg.ColumnWidth = 50;
+            this.checkedListBoxAlg.FormattingEnabled = true;
+            this.checkedListBoxAlg.Items.AddRange(new object[] {
             "GWO",
             "ABC",
             "CS",
@@ -152,17 +152,17 @@
             "BFO",
             "FA",
             "CSO"});
-            this.checkedListBox1.Location = new System.Drawing.Point(7, 28);
-            this.checkedListBox1.Margin = new System.Windows.Forms.Padding(10);
-            this.checkedListBox1.Name = "checkedListBox1";
-            this.checkedListBox1.Size = new System.Drawing.Size(154, 191);
-            this.checkedListBox1.TabIndex = 2;
-            this.checkedListBox1.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.checkedListBox1_ItemCheck);
+            this.checkedListBoxAlg.Location = new System.Drawing.Point(7, 28);
+            this.checkedListBoxAlg.Margin = new System.Windows.Forms.Padding(10);
+            this.checkedListBoxAlg.Name = "checkedListBoxAlg";
+            this.checkedListBoxAlg.Size = new System.Drawing.Size(154, 191);
+            this.checkedListBoxAlg.TabIndex = 2;
+            this.checkedListBoxAlg.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.checkedListBox1_ItemCheck);
             // 
             // groupBoxAlg
             // 
             this.groupBoxAlg.AutoSize = true;
-            this.groupBoxAlg.Controls.Add(this.checkedListBox1);
+            this.groupBoxAlg.Controls.Add(this.checkedListBoxAlg);
             this.groupBoxAlg.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             this.groupBoxAlg.Location = new System.Drawing.Point(12, 49);
             this.groupBoxAlg.Name = "groupBoxAlg";
@@ -181,16 +181,6 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(411, 297);
             this.tabControl1.TabIndex = 5;
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(12, 316);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(286, 20);
-            this.checkBox1.TabIndex = 6;
-            this.checkBox1.Text = "Автонастройка параметров алгоритма";
-            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // checkBox2
             // 
@@ -275,7 +265,7 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.checkedListBox2);
+            this.groupBox2.Controls.Add(this.checkedListBoxSolve);
             this.groupBox2.Location = new System.Drawing.Point(526, 564);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(246, 109);
@@ -283,28 +273,38 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Вывод решения";
             // 
-            // checkedListBox2
+            // checkedListBoxSolve
             // 
-            this.checkedListBox2.CheckOnClick = true;
-            this.checkedListBox2.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.checkedListBox2.FormattingEnabled = true;
-            this.checkedListBox2.Items.AddRange(new object[] {
+            this.checkedListBoxSolve.CheckOnClick = true;
+            this.checkedListBoxSolve.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.checkedListBoxSolve.FormattingEnabled = true;
+            this.checkedListBoxSolve.Items.AddRange(new object[] {
             "Файл (txt)",
             "Файл (csv)",
             "В программе"});
-            this.checkedListBox2.Location = new System.Drawing.Point(42, 23);
-            this.checkedListBox2.Margin = new System.Windows.Forms.Padding(5);
-            this.checkedListBox2.Name = "checkedListBox2";
-            this.checkedListBox2.Size = new System.Drawing.Size(168, 72);
-            this.checkedListBox2.TabIndex = 0;
+            this.checkedListBoxSolve.Location = new System.Drawing.Point(42, 23);
+            this.checkedListBoxSolve.Margin = new System.Windows.Forms.Padding(5);
+            this.checkedListBoxSolve.Name = "checkedListBoxSolve";
+            this.checkedListBoxSolve.Size = new System.Drawing.Size(168, 72);
+            this.checkedListBoxSolve.TabIndex = 0;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(12, 316);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(286, 20);
+            this.checkBox1.TabIndex = 6;
+            this.checkBox1.Text = "Автонастройка параметров алгоритма";
+            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+            this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1029, 685);
-            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.textBoxTask);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label1);
@@ -315,6 +315,7 @@
             this.Controls.Add(this.StartButton);
             this.Controls.Add(this.toolStrip1);
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "QAP Solver";
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
@@ -335,13 +336,10 @@
         private System.Windows.Forms.ToolStripMenuItem GenTask;
         private System.Windows.Forms.ToolStripMenuItem UpTask;
         private System.Windows.Forms.Button StartButton;
-        private System.Windows.Forms.CheckedListBox checkedListBox1;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton2;
-        private System.Windows.Forms.GroupBox groupBoxAlg;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuAboutQAP;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItemHelp;
         private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.CheckBox checkBox2;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Label label1;
@@ -351,7 +349,10 @@
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.TextBox textBoxTask;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.CheckedListBox checkedListBox2;
+        private System.Windows.Forms.CheckedListBox checkedListBoxSolve;
+        private System.Windows.Forms.CheckBox checkBox1;
+        public System.Windows.Forms.CheckedListBox checkedListBoxAlg;
+        public System.Windows.Forms.GroupBox groupBoxAlg;
     }
 }
 

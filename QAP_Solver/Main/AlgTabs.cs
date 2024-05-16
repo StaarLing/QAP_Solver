@@ -15,7 +15,7 @@ namespace Main
 
         private void checkedListBox1_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            string selectedItem = checkedListBox1.Items[e.Index].ToString();
+            string selectedItem = checkedListBoxAlg.Items[e.Index].ToString();
 
             if (e.NewValue == CheckState.Checked) // Если элемент был отмечен
             {
@@ -41,7 +41,7 @@ namespace Main
             foreach (string selectedItem in selectedItems)
             {
                 // Получаем параметры для выбранного алгоритма (если они есть)
-                int algorithmIndex = checkedListBox1.Items.IndexOf(selectedItem);
+                int algorithmIndex = checkedListBoxAlg.Items.IndexOf(selectedItem);
                 Dictionary<string, double> parameters = algParam.GetParameters(algorithmIndex);
 
                 if (parameters != null && parameters.Count > 0)
@@ -87,9 +87,9 @@ namespace Main
             bool selectAll = checkBox2.Checked;
 
             // Устанавливаем или снимаем отметки со всех элементов в checkedListBox1
-            for (int i = 0; i < checkedListBox1.Items.Count; i++)
+            for (int i = 0; i < checkedListBoxAlg.Items.Count; i++)
             {
-                checkedListBox1.SetItemChecked(i, selectAll);
+                checkedListBoxAlg.SetItemChecked(i, selectAll);
             }
 
             // Если флаг включен и выбраны все элементы, обновляем вкладки
@@ -103,7 +103,7 @@ namespace Main
             selectedItems.Clear();
 
             // Добавляем все выбранные элементы в список
-            foreach (string selectedItem in checkedListBox1.CheckedItems)
+            foreach (string selectedItem in checkedListBoxAlg.CheckedItems)
             {
                 selectedItems.Add(selectedItem);
             }

@@ -14,6 +14,7 @@ namespace Main
     {
         Point picLoc;
         Size picSize;
+        Task qapTask;
         public Form1()
         {
             InitializeComponent();
@@ -23,7 +24,9 @@ namespace Main
 
         private void button1_Click(object sender, EventArgs e)
         {
-            
+            Solver solver= new Solver();
+            List<int> a = checkedListBoxAlg.CheckedIndices.Cast<int>().ToList();
+            solver.GetAlg(a, qapTask);
         }
 
         private void GenTask_Click(object sender, EventArgs e)
@@ -36,7 +39,7 @@ namespace Main
                 MessageBox.Show("Некорректная размерность задачи.");
                 return;
             }
-            Task qapTask = new Task(dimension);
+            qapTask = new Task(dimension);
             qapTask.RandomTask();
 
             qapTask.DrawTask(pictureBox1, qapTask);
@@ -115,5 +118,7 @@ namespace Main
                 pictureBox1.Location = picLoc;
             }
         }
+
+
     }
 }
