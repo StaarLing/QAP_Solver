@@ -65,9 +65,20 @@ namespace Main
                         // Создаем TextBox для ввода значения параметра
                         TextBox textBox = new TextBox();
                         textBox.Multiline = true;
-                        textBox.Location = new Point(label.Right+100, verticalOffset); // Располагаем TextBox справа от Label
+                        textBox.Location = new Point(label.Right + 100, verticalOffset); // Располагаем TextBox справа от Label
                         textBox.Text = defaultValue.ToString(); // Устанавливаем значение по умолчанию
                         textBox.Size = new Size(50, 20);
+
+                        // Добавляем обработчик события TextChanged для TextBox
+                        textBox.TextChanged += (sender, e) =>
+                        {
+                            // При изменении значения TextBox обновляем значение параметра в словаре
+                            if (double.TryParse(textBox.Text, out double value))
+                            {
+                                algParam.UpdateParameter(algorithmIndex, parameterName, value);
+                            }
+                        };
+
                         // Добавляем Label и TextBox на вкладку
                         newTab.Controls.Add(label);
                         newTab.Controls.Add(textBox);

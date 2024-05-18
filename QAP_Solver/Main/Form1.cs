@@ -25,8 +25,29 @@ namespace Main
         private void button1_Click(object sender, EventArgs e)
         {
             Solver solver= new Solver();
-            List<int> a = checkedListBoxAlg.CheckedIndices.Cast<int>().ToList();
-            solver.GetAlg(a, qapTask);
+            List<Solver> solvers= new List<Solver>();
+            List<int> alg = checkedListBoxAlg.CheckedIndices.Cast<int>().ToList();
+            solvers = solver.GetAlg(alg, qapTask, algParam);
+
+            List<int> paramRes = checkedListBoxSolve.CheckedIndices.Cast<int>().ToList();
+            Result result = new Result(solvers,qapTask, paramRes);
+            if (paramRes.Contains(0))
+            {
+                // Создаем новый экземпляр диалога выбора пути
+                using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
+                {
+                    // Устанавливаем заголовок диалога
+                    folderDialog.Description = "Выберите папку для сохранения файла";
+
+                    // Показываем диалог и проверяем результат
+                    if (folderDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        // Получаем выбранный пользователем путь
+                        string selectedPath = folderDialog.SelectedPath;
+                        result.Print(selectedPath);
+                    }
+                }
+            }
         }
 
         private void GenTask_Click(object sender, EventArgs e)
@@ -61,8 +82,7 @@ namespace Main
                 string filePath = openFileDialog1.FileName;
 
                 // Создаем экземпляр задачи QAP
-                Task qapTask = new Task(1); // Например, указываем размерность задачи
-
+                qapTask = new Task(1);
                 // Считываем задачу из выбранного файла
                 qapTask.ReadTaskFromFile(filePath);
 

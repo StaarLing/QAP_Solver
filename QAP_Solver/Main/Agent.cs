@@ -12,7 +12,7 @@ namespace Main
 
         public Agent(int n)
         {
-            this.Permutation = new List<int>(n);
+            this.Permutation = GenerateRandomPermutation(n);
         }
         public Agent(List<int> permutation)
         {
@@ -30,31 +30,22 @@ namespace Main
         {
             this.Permutation = newPermutation;
         }
-        public double Fitness(Agent agent, Task task)
+        public double Fitness(Task task)
         {
-            int n = task.GetN(); // Размерность задачи
-            List<int> permutation = agent.Permutation; // Перестановка, заданная агентом
-
+            int n = task.GetN();
+            List<int> permutation = this.Permutation;
             double fitness = 0.0;
 
-            // Рассчитываем общую стоимость (fitness) на основе перестановки объектов
             for (int i = 0; i < n; i++)
             {
                 for (int j = 0; j < n; j++)
                 {
-                    int location1 = i; // Локация объекта i
-                    int location2 = j; // Локация объекта j
-
-                    int object1 = permutation[i]; // Объект, распределенный на локацию location1
-                    int object2 = permutation[j]; // Объект, распределенный на локацию location2
-
-                    // Расстояние между локациями location1 и location2
+                    int location1 = i;
+                    int location2 = j;
+                    int object1 = permutation[i];
+                    int object2 = permutation[j];
                     double distance = task.GetDistance()[location1][location2];
-
-                    // Стоимость распределения объекта object1 на локацию location2 и объекта object2 на локацию location1
                     double cost = task.GetCost()[object1][object2];
-
-                    // Учитываем стоимость в fitness
                     fitness += distance * cost;
                 }
             }
@@ -75,6 +66,17 @@ namespace Main
                 permutation[k] = value;
             }
             return permutation;
+        }
+        public List<Agent> InitializePopulation(int populationSize, int n)
+        {
+            List<Agent> population = new List<Agent>();
+
+            for (int i = 0; i < populationSize; i++)
+            {
+                population.Add(new Agent(n));
+            }
+
+            return population;
         }
     }
 }

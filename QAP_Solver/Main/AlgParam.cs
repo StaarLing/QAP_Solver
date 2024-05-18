@@ -114,5 +114,18 @@ namespace Main
                 return new Dictionary<string, double>();
             }
         }
+        public void UpdateParameter(int algorithmIndex, string paramName, double value)
+        {
+            if (param.ContainsKey(algorithmIndex))
+            {
+                // Если параметр существует, обновляем его значение
+                param[algorithmIndex][paramName] = value;
+            }
+            else
+            {
+                // Если параметр не существует, добавляем его
+                param.Add(algorithmIndex, new Dictionary<string, double> { { paramName, value } });
+            }
+        }
     }
 }

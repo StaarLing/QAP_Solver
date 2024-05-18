@@ -8,24 +8,33 @@ namespace Main
 {
     internal class Solver
     {
-        double Fitness;
-        Agent agent;
-        List<double> history;
-        public void AddHistory(double value)
+        public double BestCost { get; set; }
+        public List<int> BestSolution { get; set; }
+        public List<double> History { get; set; }
+        public Solver()
         {
-            history.Add(value);
+            BestCost = double.MaxValue;
+            BestSolution = new List<int>();
+            History = new List<double>();
         }
-        public void SetFitness(double fitness)
+        public override string ToString()
         {
-            this.Fitness = fitness;
+            // Разбиваем History на группы по 3 элемента и объединяем их в строку с переводом на новую строку
+            string historyString = string.Join(Environment.NewLine, History.Select((x, i) => new { Value = x, Index = i })
+                                                       .GroupBy(x => x.Index / 3)
+                                                       .Select(group => string.Join(", ", group.Select(x => x.Value))));
+
+            // Формируем строку результата
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Best Cost: " + BestCost);
+            sb.AppendLine("Best Solution: " + string.Join(", ", BestSolution));
+            sb.AppendLine("History:");
+            sb.Append(historyString);
+            return sb.ToString();
         }
-        public void SetAgent(Agent agent)
+        public List<Solver> GetAlg(List<int> indexAlg, Task task, AlgParam algParam)
         {
-            this.agent = agent;
-        }
-        public Solver GetAlg(List<int> indexAlg, Task task)
-        {
-            AlgParam algParam = new AlgParam();
+            List<Solver> solvers = new List<Solver>();
             Solver solver = new Solver();
             foreach (var alg in indexAlg)
             {
@@ -33,7 +42,8 @@ namespace Main
                 {
                     case 0:
                         {
-                            solver = GWO(algParam.GetParameters(alg).Values.ToList(), task);
+                            GWO gwo = new GWO();
+                            solver = gwo.Solve(algParam.GetParameters(alg).Values.ToList(), task);
                             break;
                         }
                     case 1:
@@ -87,16 +97,11 @@ namespace Main
                             break;
                         }
                 }
+                solvers.Add(solver);
             }
-            return solver;
+            return solvers;
         }
-        public Solver GWO(List<double> param, Task task)
-        {
-            Solver solver = new Solver();
-            
-
-            return solver;
-        }
+       
         public Solver ABC(List<double> param, Task task)
         {
             Solver solver = new Solver();
