@@ -48,12 +48,14 @@ namespace Main
                         }
                     case 1:
                         {
-                            solver = ABC(algParam.GetParameters(alg).Values.ToList(), task);
+                            ABC abc = new ABC();
+                            solver = abc.Solve(algParam.GetParameters(alg).Values.ToList(), task);
                             break;
                         }
                     case 2:
                         {
-                            solver = CS(algParam.GetParameters(alg).Values.ToList(), task);
+                            CS cs = new CS();
+                            solver = cs.Solve(algParam.GetParameters(alg).Values.ToList(), task);
                             break;
                         }
                     case 3:
@@ -102,13 +104,6 @@ namespace Main
             return solvers;
         }
        
-        public Solver ABC(List<double> param, Task task)
-        {
-            Solver solver = new Solver();
-
-
-            return solver;
-        }
         public Solver CS(List<double> param, Task task)
         {
             Solver solver = new Solver();
