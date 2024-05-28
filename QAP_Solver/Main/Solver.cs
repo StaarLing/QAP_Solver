@@ -26,9 +26,9 @@ namespace Main
 
             // Формируем строку результата
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("Best Cost: " + BestCost);
-            sb.AppendLine("Best Solution: " + string.Join(", ", BestSolution));
-            sb.AppendLine("History:");
+            sb.AppendLine("Лучшая стоимость: " + BestCost);
+            sb.AppendLine("Лучшее решение: " + string.Join(", ", BestSolution));
+            sb.AppendLine("История поиска: ");
             sb.Append(historyString);
             return sb.ToString();
         }

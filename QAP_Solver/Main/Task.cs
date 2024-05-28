@@ -224,11 +224,11 @@ namespace Main
 
             // Размерность задачи
             int n = task.GetN();
-            sb.AppendLine($"Dimension (n): {n}");
+            sb.AppendLine($"Размерность (n): {n}");
             sb.AppendLine();
 
             // Матрица расстояний
-            sb.AppendLine("Distance Matrix:");
+            sb.AppendLine("Матрица расстояний:");
             List<List<double>> distance = task.GetDistance();
             for (int i = 0; i < n; i++)
             {
@@ -241,7 +241,7 @@ namespace Main
             sb.AppendLine();
 
             // Матрица стоимостей
-            sb.AppendLine("Cost Matrix:");
+            sb.AppendLine("Матрица стоимостей:");
             List<List<double>> cost = task.GetCost();
             for (int i = 0; i < n; i++)
             {

@@ -49,12 +49,29 @@ namespace Main
                     // Создаем новую вкладку с именем выбранного элемента
                     TabPage newTab = new TabPage(selectedItem);
 
-                    int verticalOffset = 10; // Начальное смещение по вертикали для размещения элементов
+                    // Создаем Label для отображения названия алгоритма по центру вкладки
+                    Label titleLabel = new Label();
+                    titleLabel.Text = parameters.ElementAt(0).Key;
+                    titleLabel.AutoSize = true;
+                    titleLabel.Font = new Font(titleLabel.Font, FontStyle.Bold);
+                    titleLabel.Location = new Point(
+                        (newTab.Width - titleLabel.Width) / 2,
+                        10); // Задаем расположение Label по центру вкладки
+
+                    // Добавляем Label на вкладку
+                    newTab.Controls.Add(titleLabel);
+
+                    int verticalOffset = titleLabel.Bottom + 20; // Начальное смещение по вертикали для остальных элементов
 
                     foreach (var kvp in parameters)
                     {
                         string parameterName = kvp.Key;
                         double defaultValue = kvp.Value;
+
+                        if (kvp.Equals(parameters.ElementAt(0)))
+                        {
+                            continue; // Пропускаем создание TextBox для параметра с индексом
+                        }
 
                         // Создаем Label для отображения названия параметра
                         Label label = new Label();

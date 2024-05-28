@@ -179,7 +179,7 @@
             this.tabControl1.Multiline = true;
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(411, 297);
+            this.tabControl1.Size = new System.Drawing.Size(359, 297);
             this.tabControl1.TabIndex = 5;
             // 
             // checkBox2
@@ -210,9 +210,9 @@
             // 
             this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.pictureBox1.Cursor = System.Windows.Forms.Cursors.Cross;
-            this.pictureBox1.Location = new System.Drawing.Point(431, 9);
+            this.pictureBox1.Location = new System.Drawing.Point(379, 9);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(586, 491);
+            this.pictureBox1.Size = new System.Drawing.Size(638, 491);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 9;
             this.pictureBox1.TabStop = false;
@@ -222,7 +222,7 @@
             // 
             this.groupBox1.Controls.Add(this.radioButton2);
             this.groupBox1.Controls.Add(this.radioButton1);
-            this.groupBox1.Location = new System.Drawing.Point(238, 49);
+            this.groupBox1.Location = new System.Drawing.Point(186, 49);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(187, 82);
             this.groupBox1.TabIndex = 10;
