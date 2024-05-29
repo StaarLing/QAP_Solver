@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms.VisualStyles;
 
 namespace Main
 {
@@ -52,7 +53,7 @@ namespace Main
 
             return fitness;
         }
-        private List<int> GenerateRandomPermutation(int n)
+        public List<int> GenerateRandomPermutation(int n)
         {
             List<int> permutation = Enumerable.Range(0, n).ToList();
             Random rng = new Random();
@@ -77,6 +78,29 @@ namespace Main
             }
 
             return population;
+        }
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+
+            Agent other = (Agent)obj;
+            return Permutation.SequenceEqual(other.Permutation);
+        }
+
+        // Переопределение метода GetHashCode
+        public override int GetHashCode()
+        {
+            // Используем простую хеш-функцию для списка
+            unchecked
+            {
+                int hash = 19;
+                foreach (int value in Permutation)
+                {
+                    hash = hash * 31 + value.GetHashCode();
+                }
+                return hash;
+            }
         }
     }
 }

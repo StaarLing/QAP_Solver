@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,11 +12,13 @@ namespace Main
         public double BestCost { get; set; }
         public List<int> BestSolution { get; set; }
         public List<double> History { get; set; }
+        public long Time { get; set; }
         public Solver()
         {
             BestCost = double.MaxValue;
             BestSolution = new List<int>();
             History = new List<double>();
+            Time = 0;
         }
         public override string ToString()
         {
@@ -28,6 +31,7 @@ namespace Main
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("Лучшая стоимость: " + BestCost);
             sb.AppendLine("Лучшее решение: " + string.Join(", ", BestSolution));
+            sb.AppendLine("Время выполнения: " + Time + " ms");
             sb.AppendLine("История поиска: ");
             sb.Append(historyString);
             return sb.ToString();
@@ -36,36 +40,55 @@ namespace Main
         {
             List<Solver> solvers = new List<Solver>();
             Solver solver = new Solver();
+            Stopwatch timer = new Stopwatch();
             foreach (var alg in indexAlg)
             {
+                timer.Restart();
                 switch (alg)
                 {
                     case 0:
                         {
+                            timer.Start();
                             GWO gwo = new GWO();
                             solver = gwo.Solve(algParam.GetParameters(alg).Values.ToList(), task);
+                            timer.Stop();
+                            solver.Time = timer.ElapsedMilliseconds;
                             break;
                         }
                     case 1:
                         {
+                            timer.Start();
                             ABC abc = new ABC();
                             solver = abc.Solve(algParam.GetParameters(alg).Values.ToList(), task);
+                            timer.Stop();
+                            solver.Time = timer.ElapsedMilliseconds;
                             break;
                         }
                     case 2:
                         {
+                            timer.Start();
                             CS cs = new CS();
                             solver = cs.Solve(algParam.GetParameters(alg).Values.ToList(), task);
+                            timer.Stop();
+                            solver.Time = timer.ElapsedMilliseconds;
                             break;
                         }
                     case 3:
                         {
-                            solver = ALO(algParam.GetParameters(alg).Values.ToList(), task);
+                            timer.Start();
+                            ALO alo = new ALO();
+                            solver = alo.Solver(algParam.GetParameters(alg).Values.ToList(), task);
+                            timer.Stop();
+                            solver.Time = timer.ElapsedMilliseconds;
                             break;
                         }
                     case 4:
                         {
-                            solver = SSO(algParam.GetParameters(alg).Values.ToList(), task);
+                            timer.Start();
+                            SSO sso = new SSO();
+                            solver = sso.Solver(algParam.GetParameters(alg).Values.ToList(), task);
+                            timer.Stop();
+                            solver.Time = timer.ElapsedMilliseconds;
                             break;
                         }
                     case 5:

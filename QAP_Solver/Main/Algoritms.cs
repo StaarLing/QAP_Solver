@@ -346,4 +346,180 @@ namespace Main
             return Math.Sqrt(-2.0 * Math.Log(random.NextDouble())) * Math.Sin(2.0 * Math.PI * random.NextDouble());
         }
     }
+    internal class ALO
+    {
+        Random random = new Random();
+        public Solver Solver(List<double> param, Task task)
+        {
+            Solver solver = new Solver();
+            int n = task.GetN();
+            int numAntLions = (int)param[1];
+            int maxIterations = (int)param[2];
+            List<Agent> antLions = new List<Agent>();
+
+            // Инициализация популяции
+            for (int i = 0; i < numAntLions; i++)
+            {
+                Agent antLion = new Agent(n);
+                antLion.RandAgent();
+                antLions.Add(antLion);
+            }
+
+            solver.BestSolution = antLions[0].GetPermutation();
+            solver.BestCost = antLions[0].Fitness(task);
+
+            for (int iter = 0; iter < maxIterations; iter++)
+            {
+                // Обновление муравьев
+                for (int i = 0; i < numAntLions; i++)
+                {
+                    List<int> newPermutation = AntWalk(antLions[random.Next(numAntLions)].GetPermutation());
+                    Agent ant = new Agent(newPermutation);
+                    double antCost = ant.Fitness(task);
+                    if (antCost < antLions[i].Fitness(task))
+                    {
+                        antLions[i] = ant;
+                    }
+                }
+
+                // Обновление лучшего решения
+                foreach (var antLion in antLions)
+                {
+                    double cost = antLion.Fitness(task);
+                    if (cost < solver.BestCost)
+                    {
+                        solver.BestCost = cost;
+                        solver.BestSolution = new List<int>(antLion.GetPermutation());
+                    }
+                }
+
+                solver.History.Add(solver.BestCost);
+            }
+            return solver;
+        }
+
+        private List<int> AntWalk(List<int> currentPermutation)
+        {
+            List<int> newPermutation = new List<int>(currentPermutation);
+            int n = newPermutation.Count;
+            for (int i = 0; i < n; i++)
+            {
+                if (random.NextDouble() < 0.5)
+                {
+                    int j = random.Next(n);
+                    int temp = newPermutation[i];
+                    newPermutation[i] = newPermutation[j];
+                    newPermutation[j] = temp;
+                }
+            }
+            return newPermutation;
+        }
+    }
+    internal class SSO
+    {
+        Random random = new Random();
+        Solver solver = new Solver();
+        Agent a = new Agent(0);
+        public Solver Solver(List<double> param, Task task)
+        {
+            
+            int n = task.GetN();
+            int populationSize = (int)param[1];
+            int maxIterations = (int)param[3];
+            int groupCount = (int)param[2];
+
+            List<Agent> population = new List<Agent>();
+            List<double> fitness = new List<double>(new double[populationSize]);
+            population = a.InitializePopulation(populationSize, n);
+            List<List<Agent>> groups = new List<List<Agent>>();
+            List<Agent> LL = new List<Agent>();
+            Agent HL;
+            for (int i = 0; i < maxIterations; i++)
+            {
+                groups.Clear();
+                LL.Clear();
+                for (int j = 0; j < populationSize; j++)
+                {
+                    fitness[j] = population[j].Fitness(task);
+                }
+                HL = population[fitness.IndexOf(fitness.Min())];
+
+                int groupPopulation = populationSize / groupCount;
+                int remainingAgents = populationSize % groupCount;
+                for (int j = 0; j < groupCount; j++)
+                {
+                    var currentGroupSize = groupPopulation + (remainingAgents-- > 0 ? 1 : 0);
+                    groups.Add(population.Skip(j * currentGroupSize).Take(currentGroupSize).ToList());
+                    LL.Add(groups[j].OrderBy(agent => agent.Fitness(task)).Last());
+                }
+                foreach (var agent in population)
+                {
+                    if (groups.Last().Contains(agent))
+                    {
+                        agent.RandAgent();
+                        if (agent.Fitness(task) < HL.Fitness(task))
+                        {
+                            var minIndex = LL.Select((x, index) => new { x, index })
+                                             .OrderBy(item => item.x.Fitness(task))
+                                             .First()
+                                             .index;
+                            LL[minIndex] = HL;
+                            HL = agent;
+                        }
+                        else if (!LL.Contains(agent) && !agent.Equals(HL))
+                        {
+                            int groupIndex = -1;
+                            for (int j = 0; j < groups.Count; j++)
+                            {
+                                if (groups[j].Contains(agent))
+                                {
+                                    groupIndex = j;
+                                    break;
+                                }
+                                
+                            }
+                            List<int> VLL = CalculateVelocity(agent.GetPermutation(), LL[groupIndex].GetPermutation());
+                            List<int> VHL = CalculateVelocity(agent.GetPermutation(), HL.GetPermutation());
+                            List<int> Vi = CombineVelocities(VLL, VHL);
+
+                            agent.UpdatePermutation(MoveAgent(agent.GetPermutation(), Vi));
+                        }
+                    }
+                }
+                solver.BestCost = HL.Fitness(task);
+                solver.BestSolution = new List<int>(HL.GetPermutation());
+                solver.History.Add(solver.BestCost);
+            }
+            return solver;
+        }
+        private List<int> CalculateVelocity(List<int> current, List<int> target)
+        {
+            List<int> velocity = new List<int>(current);
+            for (int i = 0; i < current.Count; i++)
+            {
+                velocity[i] = target[i] - current[i];
+            }
+            return velocity;
+        }
+
+        private List<int> CombineVelocities(List<int> VLL, List<int> VHL)
+        {
+            List<int> combinedVelocity = new List<int>(VLL.Count);
+            for (int i = 0; i < VLL.Count; i++)
+            {
+                combinedVelocity.Add((VLL[i] + VHL[i]) / 2);
+            }
+            return combinedVelocity;
+        }
+
+        private List<int> MoveAgent(List<int> permutation, List<int> velocity)
+        {
+            List<int> newPermutation = new List<int>(permutation);
+            for (int i = 0; i < permutation.Count; i++)
+            {
+                newPermutation[i] = permutation[i] + velocity[i];
+            }
+            return newPermutation;
+        }
+    }
 }
