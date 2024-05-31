@@ -93,22 +93,38 @@ namespace Main
                         }
                     case 5:
                         {
-                            solver = IWO(algParam.GetParameters(alg).Values.ToList(), task);
+                            timer.Start();
+                            IWO iwo = new IWO();
+                            solver = iwo.Solver(algParam.GetParameters(alg).Values.ToList(), task);
+                            timer.Stop();
+                            solver.Time = timer.ElapsedMilliseconds;
                             break;
                         }
                     case 6:
                         {
-                            solver = ACO(algParam.GetParameters(alg).Values.ToList(), task);
+                            timer.Start();
+                            ACO aco = new ACO();
+                            solver = aco.Solver(algParam.GetParameters(alg).Values.ToList(), task);
+                            timer.Stop();
+                            solver.Time = timer.ElapsedMilliseconds;
                             break;
                         }
                     case 7:
                         {
-                            solver = BFO(algParam.GetParameters(alg).Values.ToList(), task);
+                            timer.Start();
+                            BFO bfo = new BFO();
+                            solver = bfo.Solver(algParam.GetParameters(alg).Values.ToList(), task);
+                            timer.Stop();
+                            solver.Time = timer.ElapsedMilliseconds;
                             break;
                         }
                     case 8:
                         {
-                            solver = FA(algParam.GetParameters(alg).Values.ToList(), task);
+                            timer.Start();
+                            FA fa = new FA();
+                            solver = fa.Solver(algParam.GetParameters(alg).Values.ToList(), task);
+                            timer.Stop();
+                            solver.Time = timer.ElapsedMilliseconds;
                             break;
                         }
                     case 9:
@@ -125,56 +141,6 @@ namespace Main
                 solvers.Add(solver);
             }
             return solvers;
-        }
-       
-        public Solver CS(List<double> param, Task task)
-        {
-            Solver solver = new Solver();
-
-
-            return solver;
-        }
-        public Solver ALO(List<double> param, Task task)
-        {
-            Solver solver = new Solver();
-
-
-            return solver;
-        }
-        public Solver SSO(List<double> param, Task task)
-        {
-            Solver solver = new Solver();
-
-
-            return solver;
-        }
-        public Solver IWO(List<double> param, Task task)
-        {
-            Solver solver = new Solver();
-
-
-            return solver;
-        }
-        public Solver ACO(List<double> param, Task task)
-        {
-            Solver solver = new Solver();
-
-
-            return solver;
-        }
-        public Solver BFO(List<double> param, Task task)
-        {
-            Solver solver = new Solver();
-
-
-            return solver;
-        }
-        public Solver FA(List<double> param, Task task)
-        {
-            Solver solver = new Solver();
-
-
-            return solver;
         }
         public Solver CSO(List<double> param, Task task)
         {

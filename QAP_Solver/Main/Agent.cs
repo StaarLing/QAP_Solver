@@ -7,30 +7,36 @@ using System.Windows.Forms.VisualStyles;
 
 namespace Main
 {
-    internal class Agent
+    public class Agent
     {
         List<int> Permutation = new List<int>();
+        private static Random rng = new Random(); // Создаем один экземпляр Random для всех агентов
 
         public Agent(int n)
         {
             this.Permutation = GenerateRandomPermutation(n);
         }
+
         public Agent(List<int> permutation)
         {
             this.Permutation = permutation;
         }
+
         public List<int> GetPermutation()
         {
             return this.Permutation;
         }
+
         public void RandAgent()
         {
             this.Permutation = GenerateRandomPermutation(this.Permutation.Count);
         }
+
         public void UpdatePermutation(List<int> newPermutation)
         {
             this.Permutation = newPermutation;
         }
+
         public double Fitness(Task task)
         {
             int n = task.GetN();
@@ -53,10 +59,10 @@ namespace Main
 
             return fitness;
         }
+
         public List<int> GenerateRandomPermutation(int n)
         {
             List<int> permutation = Enumerable.Range(0, n).ToList();
-            Random rng = new Random();
             int k = n;
             while (k > 1)
             {
@@ -68,7 +74,8 @@ namespace Main
             }
             return permutation;
         }
-        public List<Agent> InitializePopulation(int populationSize, int n)
+
+        public static List<Agent> InitializePopulation(int populationSize, int n)
         {
             List<Agent> population = new List<Agent>();
 

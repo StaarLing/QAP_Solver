@@ -19,7 +19,7 @@ namespace Main
 
             int n = task.GetN();
 
-            List<Agent> wolves = agent.InitializePopulation(populationSize, n);
+            List<Agent> wolves = Agent.InitializePopulation(populationSize, n);
             List<double> fitness = new List<double>();
 
             for (int i = 0; i < populationSize; i++)
@@ -422,7 +422,7 @@ namespace Main
         Agent a = new Agent(0);
         public Solver Solver(List<double> param, Task task)
         {
-            
+
             int n = task.GetN();
             int populationSize = (int)param[1];
             int maxIterations = (int)param[3];
@@ -430,7 +430,7 @@ namespace Main
 
             List<Agent> population = new List<Agent>();
             List<double> fitness = new List<double>(new double[populationSize]);
-            population = a.InitializePopulation(populationSize, n);
+            population = Agent.InitializePopulation(populationSize, n);
             List<List<Agent>> groups = new List<List<Agent>>();
             List<Agent> LL = new List<Agent>();
             Agent HL;
@@ -476,7 +476,7 @@ namespace Main
                                     groupIndex = j;
                                     break;
                                 }
-                                
+
                             }
                             List<int> VLL = CalculateVelocity(agent.GetPermutation(), LL[groupIndex].GetPermutation());
                             List<int> VHL = CalculateVelocity(agent.GetPermutation(), HL.GetPermutation());
@@ -522,4 +522,579 @@ namespace Main
             return newPermutation;
         }
     }
+
+    public struct Weed
+    {
+        public int[] Permutation; // Permutation representing a solution
+        public double Fitness;    // Fitness value
+        public int Seeds;         // Number of seeds
+    }
+
+    internal class IWO
+    {
+        private Task instance;
+        private Random rnd = new Random();
+        private bool sowing;
+        private int numberSeeds; // Number of seeds
+        private int numberWeeds; // Number of weeds
+        private int totalNumWeeds; // Total number of weeds
+        private int maxNumberSeeds; // Maximum number of seeds
+        private int minNumberSeeds; // Minimum number of seeds
+        private double maxDispersion; // Maximum dispersion
+        private double minDispersion; // Minimum dispersion
+        private int maxIteration; // Maximum iterations
+
+        public Weed[] Weeds; // Weeds
+        public Weed[] WeedsT; // Temporary weeds
+        public Weed[] Seeds; // Seeds
+        public int[] BestPermutation; // Best permutation
+        public double BestFitness; // Fitness of the best permutation
+
+        public Solver Solver(List<double> param, Task task)
+        {
+            Solver solver = new Solver();
+            IWO iwo = new IWO();
+            iwo.Init(task, (int)param[1], (int)param[2], (int)param[3], (int)param[4], param[5], param[6], (int)param[7]);
+
+            for (int iter = 0; iter < (int)param[7]; iter++)
+            {
+                iwo.Sowing(iter);
+                iwo.Germination();
+                solver.History.Add(iwo.BestFitness);
+            }
+            solver.BestCost = iwo.BestFitness;
+            solver.BestSolution = iwo.BestPermutation.ToList();
+
+            return solver;
+        }
+        public void Init(Task instance, int numberSeedsP, int numberWeedsP, int maxNumberSeedsP, int minNumberSeedsP,
+            double maxDispersionP, double minDispersionP, int maxIterationP)
+        {
+            this.instance = instance;
+            sowing = false;
+            BestFitness = double.MaxValue; // Since we are minimizing, start with a high value
+
+            numberSeeds = numberSeedsP;
+            numberWeeds = numberWeedsP;
+            maxNumberSeeds = maxNumberSeedsP;
+            minNumberSeeds = minNumberSeedsP;
+            maxDispersion = maxDispersionP;
+            minDispersion = minDispersionP;
+            maxIteration = maxIterationP;
+
+            if (minNumberSeeds < 1) minNumberSeeds = 1;
+            if (numberWeeds * minNumberSeeds > numberSeeds) numberWeeds = numberSeeds / minNumberSeeds;
+            else numberWeeds = numberWeedsP;
+
+            totalNumWeeds = numberWeeds + numberSeeds;
+
+            Weeds = new Weed[totalNumWeeds];
+            WeedsT = new Weed[totalNumWeeds];
+            Seeds = new Weed[numberSeeds];
+
+            for (int i = 0; i < numberWeeds; i++)
+            {
+                Weeds[i].Permutation = new int[instance.GetN()];
+                WeedsT[i].Permutation = new int[instance.GetN()];
+                Weeds[i].Fitness = double.MaxValue;
+                Weeds[i].Seeds = 0;
+            }
+            for (int i = 0; i < numberSeeds; i++)
+            {
+                Seeds[i].Permutation = new int[instance.GetN()];
+                Seeds[i].Seeds = 0;
+            }
+
+            BestPermutation = new int[instance.GetN()];
+        }
+
+        public void Sowing(int iter)
+        {
+            if (!sowing)
+            {
+                BestFitness = double.MaxValue; // Since we are minimizing, start with a high value
+
+                for (int s = 0; s < numberSeeds; s++)
+                {
+                    Seeds[s].Permutation = GenerateRandomPermutation(instance.GetN());
+                    Seeds[s].Fitness = double.MaxValue;
+                    Seeds[s].Seeds = 0;
+                }
+
+                sowing = true;
+                return;
+            }
+
+            int pos = 0;
+            double r = 0.0;
+            double dispersion = ((maxIteration - iter) / (double)maxIteration) * (maxDispersion - minDispersion) + minDispersion;
+
+            for (int w = 0; w < numberWeeds; w++)
+            {
+                Weeds[w].Seeds = 0;
+
+                for (int s = 0; s < minNumberSeeds; s++)
+                {
+                    Seeds[pos].Permutation = GenerateNeighborPermutation(Weeds[w].Permutation, dispersion);
+                    pos++;
+                    Weeds[w].Seeds++;
+                }
+            }
+
+            bool seedingLimit = false;
+            int weedsPos = 0;
+
+            for (int s = pos; s < numberSeeds; s++)
+            {
+                r = rnd.NextDouble() * (Weeds[numberWeeds - 1].Fitness - Weeds[0].Fitness) + Weeds[0].Fitness;
+
+                for (int f = 0; f < numberWeeds; f++)
+                {
+                    if (Weeds[f].Fitness <= r && r < Weeds[f].Fitness + (Weeds[0].Fitness - Weeds[numberWeeds - 1].Fitness))
+                    {
+                        weedsPos = f;
+                        break;
+                    }
+                }
+
+                if (Weeds[weedsPos].Seeds >= maxNumberSeeds)
+                {
+                    seedingLimit = false;
+                    while (!seedingLimit)
+                    {
+                        weedsPos++;
+                        if (weedsPos >= numberWeeds)
+                        {
+                            weedsPos = 0;
+                            seedingLimit = true;
+                        }
+                        else
+                        {
+                            if (Weeds[weedsPos].Seeds < maxNumberSeeds)
+                            {
+                                seedingLimit = true;
+                            }
+                        }
+                    }
+                }
+
+                Seeds[s].Permutation = GenerateNeighborPermutation(Weeds[weedsPos].Permutation, dispersion);
+                Seeds[s].Seeds = 0;
+                Weeds[weedsPos].Seeds++;
+            }
+        }
+
+        public void Germination()
+        {
+            for (int s = 0; s < numberSeeds; s++)
+            {
+                Weeds[numberWeeds + s] = Seeds[s];
+                Weeds[numberWeeds + s].Fitness = CalculateFitness(Weeds[numberWeeds + s].Permutation);
+            }
+
+            Sorting();
+
+            if (Weeds[0].Fitness < BestFitness)
+            {
+                BestFitness = Weeds[0].Fitness;
+                Array.Copy(Weeds[0].Permutation, BestPermutation, instance.GetN());
+            }
+        }
+
+        private void Sorting()
+        {
+            Array.Sort(Weeds, (a, b) => a.Fitness.CompareTo(b.Fitness)); // Sorting in ascending order of fitness
+        }
+
+        private double CalculateFitness(int[] permutation)
+        {
+            double fitness = 0.0;
+
+            for (int i = 0; i < permutation.Length; i++)
+            {
+                for (int j = 0; j < permutation.Length; j++)
+                {
+                    fitness += instance.GetCost()[i][j] * instance.GetDistance()[permutation[i]][permutation[j]];
+                }
+            }
+
+            return fitness; // Minimization problem, so no negative sign here
+        }
+
+        private int[] GenerateRandomPermutation(int size)
+        {
+            return Enumerable.Range(0, size).OrderBy(x => rnd.Next()).ToArray();
+        }
+
+        private int[] GenerateNeighborPermutation(int[] permutation, double dispersion)
+        {
+            int[] newPermutation = (int[])permutation.Clone();
+            int swapCount = (int)(dispersion * permutation.Length);
+            for (int i = 0; i < swapCount; i++)
+            {
+                int pos1 = rnd.Next(permutation.Length);
+                int pos2 = rnd.Next(permutation.Length);
+                int temp = newPermutation[pos1];
+                newPermutation[pos1] = newPermutation[pos2];
+                newPermutation[pos2] = temp;
+            }
+            return newPermutation;
+        }
+    }
+    internal class ACO
+    {
+        static Random random = new Random();
+
+        public Solver Solver(List<double> param, Task task)
+        {
+            int numObjects = task.GetN();
+            double[][] pheromones = InitPheromones(numObjects);
+
+            Agent a = new Agent(0);
+            List<Agent> agents = Agent.InitializePopulation((int)param[1], numObjects);
+
+            Solver solver = new Solver();
+            double bestFitness = double.MaxValue;
+
+            for (int iter = 0; iter < (int)param[6]; iter++)
+            {
+                UpdateAnts(agents, pheromones, task, param[2], param[3]);
+                UpdatePheromones(pheromones, agents, task, param[4], param[5]);
+
+                foreach (Agent agent in agents)
+                {
+                    double fitness = agent.Fitness(task);
+                    if (fitness < bestFitness)
+                    {
+                        bestFitness = fitness;
+                        solver.BestCost = bestFitness;
+                        solver.BestSolution = new List<int>(agent.GetPermutation());
+                    }
+                }
+                solver.History.Add(bestFitness);
+            }
+
+            return solver;
+        }
+
+        private static double[][] InitPheromones(int numObjects)
+        {
+            double[][] pheromones = new double[numObjects][];
+            for (int i = 0; i < numObjects; i++)
+            {
+                pheromones[i] = new double[numObjects];
+                for (int j = 0; j < numObjects; j++)
+                {
+                    pheromones[i][j] = 0.01;
+                }
+            }
+            return pheromones;
+        }
+
+        private static void UpdateAnts(List<Agent> agents, double[][] pheromones, Task task, double alpha, double beta)
+        {
+            foreach (Agent agent in agents)
+            {
+                agent.UpdatePermutation(BuildAssignment(agent, pheromones, task, alpha, beta));
+            }
+        }
+
+        private static List<int> BuildAssignment(Agent agent, double[][] pheromones, Task task, double alpha, double beta)
+        {
+            int numObjects = pheromones.Length;
+            List<int> permutation = agent.GetPermutation();
+            List<int> assignment = new List<int>();
+            bool[] visited = new bool[numObjects];
+
+            assignment.Add(permutation[0]);
+            visited[permutation[0]] = true;
+
+            for (int i = 1; i < numObjects; i++)
+            {
+                int nextObject = NextObject(agent, assignment[i - 1], visited, pheromones, task, alpha, beta);
+                assignment.Add(nextObject);
+                visited[nextObject] = true;
+            }
+
+            return assignment;
+        }
+
+        private static int NextObject(Agent agent, int prevObject, bool[] visited, double[][] pheromones, Task task, double alpha, double beta)
+        {
+            double[] probs = MoveProbs(agent, prevObject, visited, pheromones, task, alpha, beta);
+            double[] cumul = new double[probs.Length + 1];
+            for (int i = 0; i < probs.Length; i++)
+            {
+                cumul[i + 1] = cumul[i] + probs[i];
+            }
+            double p = random.NextDouble();
+            for (int i = 0; i < cumul.Length - 1; i++)
+            {
+                if (p >= cumul[i] && p < cumul[i + 1])
+                {
+                    return i;
+                }
+            }
+            throw new Exception("Failure to return valid object in NextObject");
+        }
+
+        private static double[] MoveProbs(Agent agent, int prevObject, bool[] visited, double[][] pheromones, Task task, double alpha, double beta)
+        {
+            int numObjects = pheromones.Length;
+            double[] taueta = new double[numObjects];
+            double sum = 0.0;
+            List<int> permutation = agent.GetPermutation();
+
+            for (int i = 0; i < numObjects; i++)
+            {
+                if (visited[i])
+                {
+                    taueta[i] = 0.0;
+                }
+                else
+                {
+                    taueta[i] = Math.Pow(pheromones[prevObject][i], alpha) *
+                        Math.Pow(1.0 / (task.GetDistance()[prevObject][i] * task.GetCost()[permutation[prevObject]][permutation[i]]), beta);
+                    if (taueta[i] < 0.0001)
+                    {
+                        taueta[i] = 0.0001;
+                    }
+                    sum += taueta[i];
+                }
+            }
+
+            double[] probs = new double[numObjects];
+            for (int i = 0; i < numObjects; i++)
+            {
+                probs[i] = taueta[i] / sum;
+            }
+            return probs;
+        }
+
+        private static void UpdatePheromones(double[][] pheromones, List<Agent> agents, Task task, double rho, double Q)
+        {
+            int numObjects = pheromones.Length;
+            foreach (Agent agent in agents)
+            {
+                List<int> permutation = agent.GetPermutation();
+                double decrease = (1.0 - rho) * pheromones[permutation[0]][permutation[numObjects - 1]];
+                double increase = 0.0;
+                double cost = agent.Fitness(task);
+
+                for (int i = 0; i < numObjects - 1; i++)
+                {
+                    increase += Q / cost;
+                    pheromones[permutation[i]][permutation[i + 1]] = decrease + increase;
+                    pheromones[permutation[i + 1]][permutation[i]] = pheromones[permutation[i]][permutation[i + 1]];
+                }
+            }
+        }
+    }
+    public static class Extensions
+    {
+        public static T MinBy<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector) where TKey : IComparable<TKey>
+        {
+            return source.Aggregate((minItem, nextItem) => selector(nextItem).CompareTo(selector(minItem)) < 0 ? nextItem : minItem);
+        }
+    }
+    internal class BFO
+    {
+        private static Solver solver = new Solver();
+
+
+        public Solver Solver(List<double> param, Task task)
+        {
+            int populationSize = (int)param[1];
+            int numEliminationDispersalSteps = (int)param[2];
+            int numReproductionSteps = (int)param[3];
+            int numChemotacticSteps = (int)param[4];
+            double eliminationDispersalProbability = param[5];
+
+            int n = task.GetN();
+            List<Agent> agents = Agent.InitializePopulation(populationSize, n);
+
+            for (int l = 0; l < numEliminationDispersalSteps; l++)
+            {
+                for (int k = 0; k < numReproductionSteps; k++)
+                {
+                    for (int j = 0; j < numChemotacticSteps; j++)
+                    {
+                        foreach (var agent in agents)
+                        {
+                            Chemotactic(agent, task);
+                        }
+                    }
+
+                    agents = agents.OrderBy(a => a.Fitness(task)).ToList();
+                    Reproduce(agents, task);
+                }
+
+                var bestAgent = agents.MinBy(a => a.Fitness(task));
+                solver.History.Add(bestAgent.Fitness(task));
+                EliminateAndDisperse(agents, eliminationDispersalProbability, n);
+            }
+
+            var finalBestAgent = agents.MinBy(a => a.Fitness(task));
+            solver.BestSolution = finalBestAgent.GetPermutation();
+            solver.BestCost = finalBestAgent.Fitness(task);
+
+            return solver;
+        }
+
+        private void Chemotactic(Agent agent, Task task)
+        {
+            List<int> currentPermutation = agent.GetPermutation();
+            double currentFitness = agent.Fitness(task);
+
+            List<int> newPermutation = GenerateNeighborPermutation(currentPermutation);
+            agent.UpdatePermutation(newPermutation);
+            double newFitness = agent.Fitness(task);
+
+            if (newFitness > currentFitness) // Swap if new fitness is worse
+            {
+                agent.UpdatePermutation(currentPermutation);
+            }
+        }
+
+        private List<int> GenerateNeighborPermutation(List<int> permutation)
+        {
+            Random rng = new Random();
+            int n = permutation.Count;
+            int i = rng.Next(n);
+            int j = rng.Next(n);
+            while (i == j)
+            {
+                j = rng.Next(n);
+            }
+            List<int> newPermutation = new List<int>(permutation);
+            int temp = newPermutation[i];
+            newPermutation[i] = newPermutation[j];
+            newPermutation[j] = temp;
+            return newPermutation;
+        }
+
+        private void Reproduce(List<Agent> agents, Task task)
+        {
+            agents = agents.OrderBy(a => a.Fitness(task)).ToList();
+            int halfSize = agents.Count / 2;
+            for (int i = 0; i < halfSize; i++)
+            {
+                agents[halfSize + i] = new Agent(new List<int>(agents[i].GetPermutation()));
+            }
+        }
+
+        private void EliminateAndDisperse(List<Agent> agents, double probability, int n)
+        {
+            Random rng = new Random();
+            for (int i = 0; i < agents.Count; i++)
+            {
+                if (rng.NextDouble() < probability)
+                {
+                    agents[i] = new Agent(n);
+                }
+            }
+        }
+    }
+    internal class FA
+    {
+        private static Solver solver = new Solver();
+        Random random = new Random();
+
+        public Solver Solver(List<double> param, Task task)
+        {
+            int n = task.GetN();
+            int populationSize = (int)param[1];
+            double alpha = param[2];
+            double beta0 = param[3];
+            double gamma = param[4];
+            int maxGenerations = (int)param[5];
+
+            Random random = new Random(); // Added Random initialization
+
+            Solver solver = new Solver(); // Create a new instance of Solver
+
+            List<Agent> population = InitializePopulation(n, populationSize); // Pass populationSize to InitializePopulation
+
+            for (int gen = 0; gen < maxGenerations; gen++)
+            {
+                for (int i = 0; i < populationSize; i++)
+                {
+                    for (int j = 0; j < populationSize; j++)
+                    {
+                        if (population[i].Fitness(task) > population[j].Fitness(task))
+                        {
+                            double beta = beta0 * Math.Exp(-gamma * Distance(population[i].GetPermutation(), population[j].GetPermutation()));
+                            MoveFirefly(population[i], population[j], beta, alpha, n, task, random); // Pass 'random' to MoveFirefly
+                        }
+                    }
+                }
+
+                // Update best solution
+                var bestAgent = population.OrderBy(a => a.Fitness(task)).First();
+                if (bestAgent.Fitness(task) < solver.BestCost || gen == 0)
+                {
+                    solver.BestCost = bestAgent.Fitness(task);
+                    solver.BestSolution = new List<int>(bestAgent.GetPermutation());
+                }
+                solver.History.Add(solver.BestCost);
+            }
+            return solver;
+        }
+
+        private List<Agent> InitializePopulation(int n, int populationSize) // Added 'populationSize' parameter
+        {
+            List<Agent> population = new List<Agent>();
+            for (int i = 0; i < populationSize; i++)
+            {
+                population.Add(new Agent(n));
+            }
+            return population;
+        }
+
+        private double Distance(List<int> perm1, List<int> perm2)
+        {
+            int n = perm1.Count;
+            int distance = 0;
+            for (int i = 0; i < n; i++)
+            {
+                if (perm1[i] != perm2[i])
+                {
+                    distance++;
+                }
+            }
+            return distance;
+        }
+
+        private void MoveFirefly(Agent firefly, Agent betterFirefly, double beta, double alpha, int n, Task task, Random random) // Added 'random' parameter
+        {
+            List<int> newPermutation = new List<int>(firefly.GetPermutation());
+
+            // Move firefly towards the better one
+            for (int i = 0; i < n; i++)
+            {
+                if (random.NextDouble() < beta)
+                {
+                    int temp = newPermutation[i];
+                    newPermutation[i] = betterFirefly.GetPermutation()[i];
+                    newPermutation[i] = temp;
+                }
+            }
+
+            // Apply random walk
+            for (int i = 0; i < n; i++)
+            {
+                if (random.NextDouble() < alpha)
+                {
+                    int idx1 = random.Next(n);
+                    int idx2 = random.Next(n);
+                    int temp = newPermutation[idx1];
+                    newPermutation[idx1] = newPermutation[idx2];
+                    newPermutation[idx2] = temp;
+                }
+            }
+
+            firefly.UpdatePermutation(newPermutation);
+        }
+    }
 }
+
