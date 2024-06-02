@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Main
 {
@@ -36,14 +39,18 @@ namespace Main
             sb.Append(historyString);
             return sb.ToString();
         }
-        public List<Solver> GetAlg(List<int> indexAlg, Task task, AlgParam algParam)
+        public async Task<List<Solver>> GetAlgAsync(List<int> indexAlg, Task task, AlgParam algParam, System.Windows.Forms.Label label, ProgressBar progressBar)
         {
             List<Solver> solvers = new List<Solver>();
             Solver solver = new Solver();
             Stopwatch timer = new Stopwatch();
+            progressBar.Maximum = indexAlg.Count();
+            progressBar.ForeColor = Color.Green;
             foreach (var alg in indexAlg)
             {
                 timer.Restart();
+                label.Text = $"Выполняется алгоритм: {algParam.GetParameters(alg).Keys.ToList()[0]}...";
+                label.Refresh();
                 switch (alg)
                 {
                     case 0:
@@ -129,7 +136,11 @@ namespace Main
                         }
                     case 9:
                         {
-                            solver = CSO(algParam.GetParameters(alg).Values.ToList(), task);
+                            timer.Start();
+                            CSO cso = new CSO();
+                            solver =  await cso.SolverAsync(algParam.GetParameters(alg).Values.ToList(), task);
+                            timer.Stop();
+                            solver.Time = timer.ElapsedMilliseconds;
                             break;
                         }
                     default:
@@ -139,7 +150,11 @@ namespace Main
                         }
                 }
                 solvers.Add(solver);
+                progressBar.Value += 1;
+                progressBar.Refresh();
             }
+            label.Text = "Выполнение завершено!";
+            label.Refresh();
             return solvers;
         }
         public Solver CSO(List<double> param, Task task)

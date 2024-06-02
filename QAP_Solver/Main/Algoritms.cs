@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -1094,6 +1095,153 @@ namespace Main
             }
 
             firefly.UpdatePermutation(newPermutation);
+        }
+    }
+    internal class CSO
+    {
+        public async Task<Solver> SolverAsync(List<double> param, Task task)
+        {
+            return await System.Threading.Tasks.Task.Run(() => Solver(param, task));
+        }
+        public Solver Solver(List<double> param, Task task)
+        {
+            int n = task.GetN();
+            int populationSize = (int)param[1];
+            double G = param[2];
+            double roosterPart = param[3];
+            double henPart = param[4];
+            double roosterLearningFactor = param[5];
+            double hensLearningFactor = param[6];
+            double selfLearningFactor = param[7];
+            int maxIterations = (int)param[8];
+
+            List<Agent> agents = Agent.InitializePopulation(populationSize, n);
+            List<Agent> roosters = new List<Agent>();
+            List<Agent> hens = new List<Agent>();
+            List<Agent> chicks = new List<Agent>();
+
+            Solver solver = new Solver();
+
+            for (int iter = 0; iter < maxIterations; iter++)
+            {
+                // Rank agents by fitness
+                agents = agents.OrderBy(a => a.Fitness(task)).ToList();
+
+                // Establish hierarchical order
+                int roosterCount = (int)(roosterPart * populationSize);
+                int henCount = (int)(henPart * populationSize);
+                int chickCount = populationSize - roosterCount - henCount;
+
+                roosters = agents.Take(roosterCount).ToList();
+                hens = agents.Skip(roosterCount).Take(henCount).ToList();
+                chicks = agents.Skip(roosterCount + henCount).ToList();
+
+                // Update positions
+                foreach (var rooster in roosters)
+                {
+                    // Rooster maintains its position
+                }
+
+                foreach (var hen in hens)
+                {
+                    int randomRoosterIndex = new Random().Next(roosterCount);
+                    int randomHenIndex = new Random().Next(henCount);
+                    Agent randomRooster = roosters[randomRoosterIndex];
+                    Agent randomHen = hens[randomHenIndex];
+
+                    hen.UpdatePermutation(UpdateHenPosition(hen, randomRooster, randomHen, hensLearningFactor));
+                }
+
+                foreach (var chick in chicks)
+                {
+                    int randomRoosterIndex = new Random().Next(roosterCount);
+                    int randomHenIndex = new Random().Next(henCount);
+                    Agent randomRooster = roosters[randomRoosterIndex];
+                    Agent motherHen = hens[randomHenIndex];
+
+                    chick.UpdatePermutation(UpdateChickPosition(chick, motherHen, randomRooster, roosterLearningFactor,
+                        hensLearningFactor, selfLearningFactor));
+                }
+                // Update global best solution
+                Agent bestAgent = agents.OrderBy(a => a.Fitness(task)).First();
+                solver.BestSolution = bestAgent.GetPermutation();
+                solver.BestCost = bestAgent.Fitness(task);
+                solver.History.Add(bestAgent.Fitness(task));
+
+                // Regularly update the hierarchical order
+                if (iter % G == 0)
+                {
+                    agents = agents.OrderBy(a => a.Fitness(task)).ToList();
+                }
+            }
+            return solver;
+        }
+
+        private List<int> UpdateChickPosition(Agent chick, Agent motherHen, Agent randomRooster, double FL, double C, double W)
+        {
+            List<int> newPosition = new List<int>(chick.GetPermutation());
+            int n = newPosition.Count;
+            Random random = new Random();
+
+            // Используем вспомогательный массив для хранения промежуточных значений
+            double[] intermediatePosition = new double[n];
+
+            for (int i = 0; i < n; i++)
+            {
+                // Применяем формулу
+                intermediatePosition[i] = W * chick.GetPermutation()[i]
+                                        + FL * (motherHen.GetPermutation()[i] - chick.GetPermutation()[i])
+                                        + C * (randomRooster.GetPermutation()[i] - chick.GetPermutation()[i]);
+            }
+
+            // Преобразуем промежуточные значения в индексы
+            List<int> sortedIndices = intermediatePosition
+                                        .Select((value, index) => new { value, index })
+                                        .OrderBy(x => x.value)
+                                        .Select(x => x.index)
+                                        .ToList();
+
+            // Создаем новую перестановку на основе отсортированных индексов
+            for (int i = 0; i < n; i++)
+            {
+                newPosition[i] = sortedIndices[i];
+            }
+            sortedIndices = null;
+            GC.Collect();
+            return newPosition;
+        }
+
+        private List<int> UpdateHenPosition(Agent hen, Agent randomRooster, Agent randomHen, double FL)
+        {
+            List<int> newPosition = new List<int>(hen.GetPermutation());
+            int n = newPosition.Count;
+            Random random = new Random();
+
+            // Используем вспомогательный массив для хранения промежуточных значений
+            double[] intermediatePosition = new double[n];
+
+            for (int i = 0; i < n; i++)
+            {
+                // Применяем формулу
+                intermediatePosition[i] = hen.GetPermutation()[i]
+                                        + FL * (randomRooster.GetPermutation()[i] - randomHen.GetPermutation()[i]);
+            }
+
+            // Преобразуем промежуточные значения в индексы
+            List<int> sortedIndices = intermediatePosition
+                                        .Select((value, index) => new { value, index })
+                                        .OrderBy(x => x.value)
+                                        .Select(x => x.index)
+                                        .ToList();
+
+            // Создаем новую перестановку на основе отсортированных индексов
+            for (int i = 0; i < n; i++)
+            {
+                newPosition[i] = sortedIndices[i];
+            }
+                        sortedIndices = null;
+            GC.Collect();
+            return newPosition;
         }
     }
 }

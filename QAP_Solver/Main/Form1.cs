@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Main
 {
@@ -22,15 +23,16 @@ namespace Main
             picSize = pictureBox1.Size;
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
-            Solver solver= new Solver();
-            List<Solver> solvers= new List<Solver>();
+            Solver solver = new Solver();
+            List<Solver> solvers = new List<Solver>();
             List<int> alg = checkedListBoxAlg.CheckedIndices.Cast<int>().ToList();
-            solvers = solver.GetAlg(alg, qapTask, algParam);
+            solvers = await solver.GetAlgAsync(alg, qapTask, algParam, label2, progressBar1);
 
             List<int> paramRes = checkedListBoxSolve.CheckedIndices.Cast<int>().ToList();
-            Result result = new Result(solvers,qapTask, paramRes);
+            Result result = new Result(solvers, qapTask, paramRes);
+            progressBar1.ForeColor = Color.Blue;
             if (paramRes.Contains(0))
             {
                 // Создаем новый экземпляр диалога выбора пути
@@ -86,7 +88,7 @@ namespace Main
                 // Считываем задачу из выбранного файла
                 qapTask.ReadTaskFromFile(filePath);
 
-                qapTask.DrawTask(pictureBox1,qapTask);
+                qapTask.DrawTask(pictureBox1, qapTask);
                 qapTask.DisplayTaskInfo(qapTask, textBoxTask);
             }
         }
@@ -127,7 +129,7 @@ namespace Main
         private void pictureBox1_DoubleClick(object sender, EventArgs e)
         {
 
-            if(pictureBox1.Size != this.ClientSize)
+            if (pictureBox1.Size != this.ClientSize)
             {
                 pictureBox1.Size = this.ClientSize;
                 pictureBox1.Location = new Point(0, 0);

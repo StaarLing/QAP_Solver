@@ -51,6 +51,8 @@
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.checkedListBoxSolve = new System.Windows.Forms.CheckedListBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.label2 = new System.Windows.Forms.Label();
             this.toolStrip1.SuspendLayout();
             this.groupBoxAlg.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -125,9 +127,9 @@
             // 
             // StartButton
             // 
-            this.StartButton.Location = new System.Drawing.Point(778, 621);
+            this.StartButton.Location = new System.Drawing.Point(771, 621);
             this.StartButton.Name = "StartButton";
-            this.StartButton.Size = new System.Drawing.Size(239, 52);
+            this.StartButton.Size = new System.Drawing.Size(246, 52);
             this.StartButton.TabIndex = 1;
             this.StartButton.Text = "Решить";
             this.StartButton.UseVisualStyleBackColor = true;
@@ -266,7 +268,7 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.checkedListBoxSolve);
-            this.groupBox2.Location = new System.Drawing.Point(526, 564);
+            this.groupBox2.Location = new System.Drawing.Point(771, 506);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(246, 109);
             this.groupBox2.TabIndex = 12;
@@ -298,15 +300,34 @@
             this.checkBox1.Text = "Автонастройка параметров алгоритма";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
+            // progressBar1
+            // 
+            this.progressBar1.ForeColor = System.Drawing.Color.Blue;
+            this.progressBar1.Location = new System.Drawing.Point(379, 621);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(386, 23);
+            this.progressBar1.TabIndex = 13;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(379, 599);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(164, 16);
+            this.label2.TabIndex = 8;
+            this.label2.Text = "Выполняется алгоритм: ";
+            // 
             // Form1
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1029, 685);
+            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.textBoxTask);
             this.Controls.Add(this.groupBox1);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.checkBox2);
             this.Controls.Add(this.checkBox1);
@@ -353,6 +374,8 @@
         private System.Windows.Forms.CheckBox checkBox1;
         public System.Windows.Forms.CheckedListBox checkedListBoxAlg;
         public System.Windows.Forms.GroupBox groupBoxAlg;
+        private System.Windows.Forms.ProgressBar progressBar1;
+        private System.Windows.Forms.Label label2;
     }
 }
 
