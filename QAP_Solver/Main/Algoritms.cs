@@ -13,6 +13,7 @@ namespace Main
         public Solver Solve(List<double> param, Task task)
         {
             Solver solver = new Solver();
+            
             Agent agent = new Agent(0);
             int populationSize = (int)param[1];
             int maxIterations = (int)param[2];

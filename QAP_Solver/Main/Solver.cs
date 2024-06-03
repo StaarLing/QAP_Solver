@@ -12,6 +12,7 @@ namespace Main
 {
     internal class Solver
     {
+        public string NameAlg { get; set; }
         public double BestCost { get; set; }
         public List<int> BestSolution { get; set; }
         public List<double> History { get; set; }
@@ -32,6 +33,7 @@ namespace Main
 
             // Формируем строку результата
             StringBuilder sb = new StringBuilder();
+            sb.AppendLine("Название алгоритма: " + NameAlg);
             sb.AppendLine("Лучшая стоимость: " + BestCost);
             sb.AppendLine("Лучшее решение: " + string.Join(", ", BestSolution));
             sb.AppendLine("Время выполнения: " + Time + " ms");
@@ -45,12 +47,13 @@ namespace Main
             Solver solver = new Solver();
             Stopwatch timer = new Stopwatch();
             progressBar.Maximum = indexAlg.Count();
-            progressBar.ForeColor = Color.Green;
+
             foreach (var alg in indexAlg)
             {
                 timer.Restart();
                 label.Text = $"Выполняется алгоритм: {algParam.GetParameters(alg).Keys.ToList()[0]}...";
                 label.Refresh();
+
                 switch (alg)
                 {
                     case 0:
@@ -149,6 +152,7 @@ namespace Main
                             break;
                         }
                 }
+                solver.NameAlg = algParam.GetParameters(alg).Keys.ToList()[0];
                 solvers.Add(solver);
                 progressBar.Value += 1;
                 progressBar.Refresh();

@@ -50,7 +50,20 @@ namespace Main
         public void WriteResultsToFile(List<Solver> solvers, string filePath)
         {
             using (StreamWriter writer = new StreamWriter(filePath))
-            {
+            {// Write summary table header
+                writer.WriteLine("Сводная таблица");
+                writer.WriteLine("Название алгоритма                       | Лучшая стоимость   | Время (ms)");
+                writer.WriteLine(new string('-', 63));
+
+                // Write summary for each solver
+                foreach (var solver in solvers)
+                {
+                    writer.WriteLine($"{solver.NameAlg, -40} | {solver.BestCost,9:F6}       | {solver.Time,1}");
+                }
+                writer.WriteLine(new string('-', 63));
+                writer.WriteLine();
+
+                // Write detailed results for each solver
                 foreach (var solver in solvers)
                 {
                     writer.WriteLine(solver.ToString());
