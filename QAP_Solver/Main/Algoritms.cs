@@ -13,7 +13,7 @@ namespace Main
         public Solver Solve(List<double> param, Task task)
         {
             Solver solver = new Solver();
-            
+
             Agent agent = new Agent(0);
             int populationSize = (int)param[1];
             int maxIterations = (int)param[2];
@@ -419,12 +419,10 @@ namespace Main
     }
     internal class SSO
     {
-        Random random = new Random();
-        Solver solver = new Solver();
-        Agent a = new Agent(0);
+
         public Solver Solver(List<double> param, Task task)
         {
-
+            Solver solver = new Solver();
             int n = task.GetN();
             int populationSize = (int)param[1];
             int maxIterations = (int)param[3];
@@ -901,11 +899,9 @@ namespace Main
     }
     internal class BFO
     {
-        private static Solver solver = new Solver();
-
-
         public Solver Solver(List<double> param, Task task)
         {
+            Solver solver = new Solver();
             int populationSize = (int)param[1];
             int numEliminationDispersalSteps = (int)param[2];
             int numReproductionSteps = (int)param[3];
@@ -999,8 +995,6 @@ namespace Main
     }
     internal class FA
     {
-        private static Solver solver = new Solver();
-        Random random = new Random();
 
         public Solver Solver(List<double> param, Task task)
         {
@@ -1240,10 +1234,9 @@ namespace Main
             {
                 newPosition[i] = sortedIndices[i];
             }
-                        sortedIndices = null;
+            sortedIndices = null;
             GC.Collect();
             return newPosition;
         }
     }
 }
-

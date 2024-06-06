@@ -161,14 +161,5 @@ namespace Main
             label.Refresh();
             return solvers;
         }
-        public Solver CSO(List<double> param, Task task)
-        {
-            Solver solver = new Solver();
-
-
-            return solver;
-        }
-
-
     }
 }

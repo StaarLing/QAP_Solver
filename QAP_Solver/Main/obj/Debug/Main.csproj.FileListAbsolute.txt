@@ -14,3 +14,7 @@ D:\Study\Диплом\QAP_Solver\QAP_Solver\Main\bin\Debug\Accord.dll.config
 D:\Study\Диплом\QAP_Solver\QAP_Solver\Main\bin\Debug\Accord.dll
 D:\Study\Диплом\QAP_Solver\QAP_Solver\Main\bin\Debug\Accord.xml
 D:\Study\Диплом\QAP_Solver\QAP_Solver\Main\obj\Debug\Main.csproj.CopyComplete
+D:\Study\Диплом\QAP_Solver\QAP_Solver\Main\bin\Debug\OxyPlot.dll
+D:\Study\Диплом\QAP_Solver\QAP_Solver\Main\bin\Debug\OxyPlot.WindowsForms.dll
+D:\Study\Диплом\QAP_Solver\QAP_Solver\Main\bin\Debug\OxyPlot.xml
+D:\Study\Диплом\QAP_Solver\QAP_Solver\Main\bin\Debug\OxyPlot.WindowsForms.xml

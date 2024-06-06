@@ -31,7 +31,7 @@ namespace Main
             solvers = await solver.GetAlgAsync(alg, qapTask, algParam, label2, progressBar1);
 
             List<int> paramRes = checkedListBoxSolve.CheckedIndices.Cast<int>().ToList();
-            Result result = new Result(solvers, qapTask, paramRes);
+            Result result = new Result(solvers, paramRes);
             progressBar1.ForeColor = Color.Blue;
             if (paramRes.Contains(0))
             {
@@ -49,6 +49,10 @@ namespace Main
                         result.Print(selectedPath);
                     }
                 }
+            }
+            if(paramRes.Contains(1))
+            {
+                result.PlotSolversHistory(solvers);
             }
         }
 

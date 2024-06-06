@@ -214,7 +214,7 @@
             this.pictureBox1.Cursor = System.Windows.Forms.Cursors.Cross;
             this.pictureBox1.Location = new System.Drawing.Point(379, 9);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(638, 491);
+            this.pictureBox1.Size = new System.Drawing.Size(638, 510);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 9;
             this.pictureBox1.TabStop = false;
@@ -268,9 +268,9 @@
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.checkedListBoxSolve);
-            this.groupBox2.Location = new System.Drawing.Point(771, 506);
+            this.groupBox2.Location = new System.Drawing.Point(771, 525);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(246, 109);
+            this.groupBox2.Size = new System.Drawing.Size(246, 90);
             this.groupBox2.TabIndex = 12;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Вывод решения";
@@ -282,12 +282,11 @@
             this.checkedListBoxSolve.FormattingEnabled = true;
             this.checkedListBoxSolve.Items.AddRange(new object[] {
             "Файл (txt)",
-            "Файл (csv)",
-            "В программе"});
-            this.checkedListBoxSolve.Location = new System.Drawing.Point(42, 23);
+            "Вывести график сходимости"});
+            this.checkedListBoxSolve.Location = new System.Drawing.Point(8, 23);
             this.checkedListBoxSolve.Margin = new System.Windows.Forms.Padding(5);
             this.checkedListBoxSolve.Name = "checkedListBoxSolve";
-            this.checkedListBoxSolve.Size = new System.Drawing.Size(168, 72);
+            this.checkedListBoxSolve.Size = new System.Drawing.Size(230, 55);
             this.checkedListBoxSolve.TabIndex = 0;
             // 
             // checkBox1

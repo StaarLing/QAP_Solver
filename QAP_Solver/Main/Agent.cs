@@ -10,7 +10,7 @@ namespace Main
     public class Agent
     {
         List<int> Permutation = new List<int>();
-        private static Random rng = new Random(); // Создаем один экземпляр Random для всех агентов
+        private static Random random = new Random(); // Создаем один экземпляр Random для всех агентов
 
         public Agent(int n)
         {
@@ -67,7 +67,7 @@ namespace Main
             while (k > 1)
             {
                 k--;
-                int randIndex = rng.Next(k + 1);
+                int randIndex = random.Next(k + 1);
                 int value = permutation[randIndex];
                 permutation[randIndex] = permutation[k];
                 permutation[k] = value;
