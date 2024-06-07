@@ -9,12 +9,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using OxyPlot.Legends;
+using OxyPlot.Axes;
 
 namespace Main
 {
     internal class Result
     {
-        List<Solver> solvers;
+        public List<Solver> solvers;
         List<int> paramRes;
         public Result(List<Solver> solvers, List<int> paramRes)
         {
@@ -91,6 +92,19 @@ namespace Main
                 LegendOrientation = LegendOrientation.Vertical
             };
             myModel.Legends.Add(legend);
+
+            // Добавляем названия осей
+            myModel.Axes.Add(new LinearAxis
+            {
+                Position = AxisPosition.Bottom,
+                Title = "Итерации"
+            });
+
+            myModel.Axes.Add(new LinearAxis
+            {
+                Position = AxisPosition.Left,
+                Title = "Значение функции"
+            });
 
             for (int i = 0; i < solvers.Count; i++)
             {

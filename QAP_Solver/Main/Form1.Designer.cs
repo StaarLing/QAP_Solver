@@ -53,6 +53,7 @@
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.label2 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             this.toolStrip1.SuspendLayout();
             this.groupBoxAlg.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -226,7 +227,7 @@
             this.groupBox1.Controls.Add(this.radioButton1);
             this.groupBox1.Location = new System.Drawing.Point(186, 49);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(187, 82);
+            this.groupBox1.Size = new System.Drawing.Size(187, 75);
             this.groupBox1.TabIndex = 10;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Режим отображения";
@@ -282,7 +283,8 @@
             this.checkedListBoxSolve.FormattingEnabled = true;
             this.checkedListBoxSolve.Items.AddRange(new object[] {
             "Файл (txt)",
-            "Вывести график сходимости"});
+            "Вывести график сходимости",
+            "Решить полным перебором"});
             this.checkedListBoxSolve.Location = new System.Drawing.Point(8, 23);
             this.checkedListBoxSolve.Margin = new System.Windows.Forms.Padding(5);
             this.checkedListBoxSolve.Name = "checkedListBoxSolve";
@@ -316,11 +318,22 @@
             this.label2.TabIndex = 8;
             this.label2.Text = "Выполняется алгоритм: ";
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(382, 525);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(130, 46);
+            this.button1.TabIndex = 14;
+            this.button1.Text = "Сохранить задачу в файл";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            // 
             // Form1
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1029, 685);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.groupBox2);
@@ -375,6 +388,7 @@
         public System.Windows.Forms.GroupBox groupBoxAlg;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Button button1;
     }
 }
 

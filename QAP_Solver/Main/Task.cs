@@ -69,6 +69,57 @@ namespace Main
                 }
             }
         }
+        public void WriteTaskToFile(string filePath, Task task)
+        {
+            try
+            {
+                using (StreamWriter sw = new StreamWriter(filePath))
+                {
+                    // Записываем значение n
+                    sw.WriteLine(task.GetN());
+
+                    // Записываем матрицу расстояний
+                    List<List<double>> distance = task.GetDistance();
+                    foreach (var row in distance)
+                    {
+                        foreach (var value in row)
+                        {
+                            sw.Write(value + " ");
+                        }
+                        sw.WriteLine(); // Переход на новую строку для следующей строки матрицы
+                    }
+
+                    // Записываем матрицу стоимостей
+                    List<List<double>> cost = task.GetCost();
+                    foreach (var row in cost)
+                    {
+                        foreach (var value in row)
+                        {
+                            sw.Write(value + " ");
+                        }
+                        sw.WriteLine(); // Переход на новую строку для следующей строки матрицы
+                    }
+                }
+
+                MessageBox.Show("Task written successfully to file.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error writing task to file: {ex.Message}");
+            }
+        }
+        public double CalculateCost(List<int> permutation)
+        {
+            double totalCost = 0.0;
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    totalCost += distance[i][j] * cost[permutation[i]][permutation[j]];
+                }
+            }
+            return totalCost;
+        }
         public void ReadTaskFromFile(string filePath)
         {
             try
@@ -189,7 +240,7 @@ namespace Main
                     float penWidth = (float)(costValue * 0.5); // Пропорциональная толщина линии
 
                     // Определяем цвет линии (чем выше стоимость, тем краснее)
-                    Color lineColor = Color.FromArgb((int)(costValue * 10), 0, 0); // Пропорциональный красный цвет
+                    Color lineColor = Color.FromArgb((int)((costValue * 10)%255), 0, 0); // Пропорциональный красный цвет
 
                     using (Pen pen = new Pen(lineColor))
                     {

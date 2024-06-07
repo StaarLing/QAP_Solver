@@ -1239,4 +1239,61 @@ namespace Main
             return newPosition;
         }
     }
+    internal class BruteForceSolver
+    {
+        private double bestCost;
+        private List<int> bestSolution;
+
+        public BruteForceSolver()
+        {
+            bestCost = double.MaxValue;
+            bestSolution = new List<int>();
+        }
+
+        public Solver Solve(Task task)
+        {
+            int n = task.GetN();
+            List<int> permutation = new List<int>(n);
+            for (int i = 0; i < n; i++)
+            {
+                permutation.Add(i);
+            }
+
+            Permute(permutation, 0, n - 1, task);
+
+            Solver solver = new Solver();
+            solver.BestCost = bestCost;
+            solver.BestSolution = new List<int>(bestSolution);
+            return solver;
+        }
+
+        private void Permute(List<int> permutation, int left, int right, Task task)
+        {
+            if (left == right)
+            {
+                double currentCost = task.CalculateCost(permutation);
+                if (currentCost < bestCost)
+                {
+                    bestCost = currentCost;
+                    bestSolution = new List<int>(permutation);
+                }
+            }
+            else
+            {
+                for (int i = left; i <= right; i++)
+                {
+                    Swap(permutation, left, i);
+                    Permute(permutation, left + 1, right, task);
+                    Swap(permutation, left, i); // backtrack
+                }
+            }
+        }
+
+        private void Swap(List<int> list, int i, int j)
+        {
+            int temp = list[i];
+            list[i] = list[j];
+            list[j] = temp;
+        }
+    }
 }

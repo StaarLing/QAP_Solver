@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -46,6 +47,18 @@ namespace Main
                     {
                         // Получаем выбранный пользователем путь
                         string selectedPath = folderDialog.SelectedPath;
+
+                        if(paramRes.Contains(2))
+                        {
+                            Stopwatch timer = new Stopwatch();
+                            timer.Start();
+                            BruteForceSolver bruteForceSolver = new BruteForceSolver();
+                            Solver solv = bruteForceSolver.Solve(qapTask);
+                            timer.Stop();
+                            solv.Time = (timer.ElapsedMilliseconds);
+                            solv.NameAlg = "Полный перебор";
+                            result.solvers.Add(solv);
+                        }
                         result.Print(selectedPath);
                     }
                 }
@@ -145,6 +158,22 @@ namespace Main
             }
         }
 
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            using (FolderBrowserDialog folderDialog = new FolderBrowserDialog())
+            {
+                // Устанавливаем заголовок диалога
+                folderDialog.Description = "Выберите папку для сохранения файла";
 
+                // Показываем диалог и проверяем результат
+                if (folderDialog.ShowDialog() == DialogResult.OK)
+                {
+                    // Получаем выбранный пользователем путь
+                    string selectedPath = folderDialog.SelectedPath;
+
+                    qapTask.WriteTaskToFile("C:\\Users\\1\\Documents\\file.txt", qapTask);
+                }
+            }
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace Main
             Dictionary<string, double> parametersAlgorithm0 = new Dictionary<string, double>
             {
                 { "Алгоритм серых волков", 1 },
-                { "Кол-во волков", 10 },
+                { "Кол-во волков", 100 },
                 { "Кол-во итераций", 100 },
             };
             param.Add(0, parametersAlgorithm0);
@@ -21,7 +21,7 @@ namespace Main
             Dictionary<string, double> parametersAlgorithm1 = new Dictionary<string, double>
             {
                 { "Алгоритм искусственной пчелиной колонии", 1 },
-                { "Размер колонии", 10 },
+                { "Размер колонии", 100 },
                 { "Кол-во итераций", 100 },
                 { "Кол-во попыток", 3 }
             };
@@ -30,7 +30,7 @@ namespace Main
             Dictionary<string, double> parametersAlgorithm2 = new Dictionary<string, double>
             {
                 { "Алгоритм кукушки", 1 },
-                { "Кол-во гнезд", 10 },
+                { "Кол-во гнезд", 100 },
                 { "Кол-во итераций", 100 },
                 { "Размер шага", 1.0 },
                 { "Доля заброшенных гнезд", 0.1 }
@@ -57,9 +57,9 @@ namespace Main
             Dictionary<string, double> parametersAlgorithm5 = new Dictionary<string, double>
             {
                 { "Алгоритм инвазивных сорняков", 1 },
-                { "Начальное кол-во семян", 20 },
-                { "Начальное кол-во растений", 10 },
-                { "Макс. кол-во растений в колонии", 5 },
+                { "Начальное кол-во семян", 50 },
+                { "Начальное кол-во растений", 20 },
+                { "Макс. кол-во растений в колонии", 10 },
                 { "Мин. кол-во растений в колонии", 1 },
                 { "Макч. коэф. модуляции", 1 },
                 { "Мин. коэф. модуляции", 0.1 },
