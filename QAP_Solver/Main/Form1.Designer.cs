@@ -333,8 +333,6 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(1029, 685);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.textBoxTask);
@@ -347,6 +345,10 @@
             this.Controls.Add(this.groupBoxAlg);
             this.Controls.Add(this.StartButton);
             this.Controls.Add(this.toolStrip1);
+            this.Controls.Add(this.button1);
+            this.Controls.Add(this.progressBar1);
+            this.MaximumSize = new System.Drawing.Size(1047, 732);
+            this.MinimumSize = new System.Drawing.Size(1047, 732);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "QAP Solver";

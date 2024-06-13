@@ -46,8 +46,9 @@ namespace Main
             List<Solver> solvers = new List<Solver>();
             Solver solver = new Solver();
             Stopwatch timer = new Stopwatch();
+            progressBar.Value = 0;
             progressBar.Maximum = indexAlg.Count();
-
+            
             foreach (var alg in indexAlg)
             {
                 timer.Restart();

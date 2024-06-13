@@ -419,7 +419,6 @@ namespace Main
     }
     internal class SSO
     {
-
         public Solver Solver(List<double> param, Task task)
         {
             Solver solver = new Solver();
@@ -428,76 +427,82 @@ namespace Main
             int maxIterations = (int)param[3];
             int groupCount = (int)param[2];
 
-            List<Agent> population = new List<Agent>();
+            List<Agent> population = Agent.InitializePopulation(populationSize, n);
             List<double> fitness = new List<double>(new double[populationSize]);
-            population = Agent.InitializePopulation(populationSize, n);
             List<List<Agent>> groups = new List<List<Agent>>();
             List<Agent> LL = new List<Agent>();
-            Agent HL;
-            for (int i = 0; i < maxIterations; i++)
+            Agent HL = null;
+
+            Random random = new Random();
+
+            for (int iteration = 0; iteration < maxIterations; iteration++)
             {
                 groups.Clear();
                 LL.Clear();
+
+                // Calculate fitness for each agent
                 for (int j = 0; j < populationSize; j++)
                 {
                     fitness[j] = population[j].Fitness(task);
                 }
+
+                // Determine Head Leader (HL)
                 HL = population[fitness.IndexOf(fitness.Min())];
 
+                // Assign agents to groups
                 int groupPopulation = populationSize / groupCount;
                 int remainingAgents = populationSize % groupCount;
+                int currentIndex = 0;
                 for (int j = 0; j < groupCount; j++)
                 {
-                    var currentGroupSize = groupPopulation + (remainingAgents-- > 0 ? 1 : 0);
-                    groups.Add(population.Skip(j * currentGroupSize).Take(currentGroupSize).ToList());
-                    LL.Add(groups[j].OrderBy(agent => agent.Fitness(task)).Last());
+                    int currentGroupSize = groupPopulation + (remainingAgents-- > 0 ? 1 : 0);
+                    List<Agent> group = population.Skip(currentIndex).Take(currentGroupSize).ToList();
+                    groups.Add(group);
+                    currentIndex += currentGroupSize;
+
+                    // Determine Local Leader (LL) for the group
+                    LL.Add(group.OrderBy(agent => agent.Fitness(task)).First());
                 }
-                foreach (var agent in population)
+
+                // Update agents' positions
+                foreach (var group in groups)
                 {
-                    if (groups.Last().Contains(agent))
+                    foreach (var agent in group)
                     {
-                        agent.RandAgent();
-                        if (agent.Fitness(task) < HL.Fitness(task))
+                        if (agent == HL)
                         {
-                            var minIndex = LL.Select((x, index) => new { x, index })
-                                             .OrderBy(item => item.x.Fitness(task))
-                                             .First()
-                                             .index;
-                            LL[minIndex] = HL;
-                            HL = agent;
+                            continue;
                         }
-                        else if (!LL.Contains(agent) && !agent.Equals(HL))
-                        {
-                            int groupIndex = -1;
-                            for (int j = 0; j < groups.Count; j++)
-                            {
-                                if (groups[j].Contains(agent))
-                                {
-                                    groupIndex = j;
-                                    break;
-                                }
 
-                            }
-                            List<int> VLL = CalculateVelocity(agent.GetPermutation(), LL[groupIndex].GetPermutation());
-                            List<int> VHL = CalculateVelocity(agent.GetPermutation(), HL.GetPermutation());
-                            List<int> Vi = CombineVelocities(VLL, VHL);
+                        List<int> VLL = CalculateVelocity(agent.GetPermutation(), LL[groups.IndexOf(group)].GetPermutation());
+                        List<int> VHL = CalculateVelocity(agent.GetPermutation(), HL.GetPermutation());
+                        List<int> Vi = CombineVelocities(VLL, VHL);
 
-                            agent.UpdatePermutation(MoveAgent(agent.GetPermutation(), Vi));
-                        }
+                        agent.UpdatePermutation(MoveAgent(agent.GetPermutation(), Vi));
                     }
                 }
-                solver.BestCost = HL.Fitness(task);
-                solver.BestSolution = new List<int>(HL.GetPermutation());
-                solver.History.Add(solver.BestCost);
+
+                // Update HL if necessary
+                foreach (var agent in population)
+                {
+                    if (agent.Fitness(task) < HL.Fitness(task))
+                    {
+                        HL = agent;
+                    }
+                }
+                solver.History.Add(HL.Fitness(task));
             }
+            solver.BestCost = HL.Fitness(task);
+            solver.BestSolution = HL.GetPermutation();
             return solver;
         }
+
         private List<int> CalculateVelocity(List<int> current, List<int> target)
         {
-            List<int> velocity = new List<int>(current);
+            List<int> velocity = new List<int>(current.Count);
             for (int i = 0; i < current.Count; i++)
             {
-                velocity[i] = target[i] - current[i];
+                velocity.Add(target[i] - current[i]);
             }
             return velocity;
         }
@@ -505,9 +510,10 @@ namespace Main
         private List<int> CombineVelocities(List<int> VLL, List<int> VHL)
         {
             List<int> combinedVelocity = new List<int>(VLL.Count);
+            Random random = new Random();
             for (int i = 0; i < VLL.Count; i++)
             {
-                combinedVelocity.Add((VLL[i] + VHL[i]) / 2);
+                combinedVelocity.Add(random.NextDouble() < 0.5 ? VLL[i] : VHL[i]);
             }
             return combinedVelocity;
         }
@@ -515,11 +521,49 @@ namespace Main
         private List<int> MoveAgent(List<int> permutation, List<int> velocity)
         {
             List<int> newPermutation = new List<int>(permutation);
-            for (int i = 0; i < permutation.Count; i++)
+            HashSet<int> usedValues = new HashSet<int>();
+
+            for (int i = 0; i < newPermutation.Count; i++)
             {
-                newPermutation[i] = permutation[i] + velocity[i];
+                int newValue = newPermutation[i] + velocity[i];
+                newValue = Math.Max(0, Math.Min(newValue, newPermutation.Count - 1));
+                while (usedValues.Contains(newValue))
+                {
+                    newValue = (newValue + 1) % newPermutation.Count;
+                }
+                newPermutation[i] = newValue;
+                usedValues.Add(newValue);
             }
-            return newPermutation;
+
+            return EnsurePermutation(newPermutation);
+        }
+
+        private List<int> EnsurePermutation(List<int> permutation)
+        {
+            List<int> validPermutation = new List<int>(permutation);
+            HashSet<int> usedValues = new HashSet<int>();
+
+            for (int i = 0; i < validPermutation.Count; i++)
+            {
+                if (usedValues.Contains(validPermutation[i]))
+                {
+                    for (int j = 0; j < validPermutation.Count; j++)
+                    {
+                        if (!usedValues.Contains(j))
+                        {
+                            validPermutation[i] = j;
+                            usedValues.Add(j);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    usedValues.Add(validPermutation[i]);
+                }
+            }
+
+            return validPermutation;
         }
     }
 
@@ -750,7 +794,6 @@ namespace Main
             int numObjects = task.GetN();
             double[][] pheromones = InitPheromones(numObjects);
 
-            Agent a = new Agent(0);
             List<Agent> agents = Agent.InitializePopulation((int)param[1], numObjects);
 
             Solver solver = new Solver();
@@ -835,7 +878,7 @@ namespace Main
                     return i;
                 }
             }
-            throw new Exception("Failure to return valid object in NextObject");
+            return random.Next(0,cumul.Length-2);
         }
 
         private static double[] MoveProbs(Agent agent, int prevObject, bool[] visited, double[][] pheromones, Task task, double alpha, double beta)
@@ -843,7 +886,6 @@ namespace Main
             int numObjects = pheromones.Length;
             double[] taueta = new double[numObjects];
             double sum = 0.0;
-            List<int> permutation = agent.GetPermutation();
 
             for (int i = 0; i < numObjects; i++)
             {
@@ -853,12 +895,8 @@ namespace Main
                 }
                 else
                 {
-                    taueta[i] = Math.Pow(pheromones[prevObject][i], alpha) *
-                        Math.Pow(1.0 / (task.GetDistance()[prevObject][i] * task.GetCost()[permutation[prevObject]][permutation[i]]), beta);
-                    if (taueta[i] < 0.0001)
-                    {
-                        taueta[i] = 0.0001;
-                    }
+                    double eta = 1.0 / task.GetDistance()[prevObject][i];
+                    taueta[i] = Math.Pow(pheromones[prevObject][i], alpha) * Math.Pow(eta, beta);
                     sum += taueta[i];
                 }
             }
@@ -874,17 +912,25 @@ namespace Main
         private static void UpdatePheromones(double[][] pheromones, List<Agent> agents, Task task, double rho, double Q)
         {
             int numObjects = pheromones.Length;
+
+            // Испарение феромонов
+            for (int i = 0; i < numObjects; i++)
+            {
+                for (int j = 0; j < numObjects; j++)
+                {
+                    pheromones[i][j] *= (1 - rho);
+                }
+            }
+
+            // Обновление феромонов
             foreach (Agent agent in agents)
             {
                 List<int> permutation = agent.GetPermutation();
-                double decrease = (1.0 - rho) * pheromones[permutation[0]][permutation[numObjects - 1]];
-                double increase = 0.0;
                 double cost = agent.Fitness(task);
 
                 for (int i = 0; i < numObjects - 1; i++)
                 {
-                    increase += Q / cost;
-                    pheromones[permutation[i]][permutation[i + 1]] = decrease + increase;
+                    pheromones[permutation[i]][permutation[i + 1]] += Q / cost;
                     pheromones[permutation[i + 1]][permutation[i]] = pheromones[permutation[i]][permutation[i + 1]];
                 }
             }
@@ -899,6 +945,8 @@ namespace Main
     }
     internal class BFO
     {
+        private Random rng = new Random();
+
         public Solver Solver(List<double> param, Task task)
         {
             Solver solver = new Solver();
@@ -956,7 +1004,6 @@ namespace Main
 
         private List<int> GenerateNeighborPermutation(List<int> permutation)
         {
-            Random rng = new Random();
             int n = permutation.Count;
             int i = rng.Next(n);
             int j = rng.Next(n);
@@ -973,7 +1020,7 @@ namespace Main
 
         private void Reproduce(List<Agent> agents, Task task)
         {
-            agents = agents.OrderBy(a => a.Fitness(task)).ToList();
+            agents.Sort((a, b) => a.Fitness(task).CompareTo(b.Fitness(task)));
             int halfSize = agents.Count / 2;
             for (int i = 0; i < halfSize; i++)
             {
@@ -983,7 +1030,6 @@ namespace Main
 
         private void EliminateAndDisperse(List<Agent> agents, double probability, int n)
         {
-            Random rng = new Random();
             for (int i = 0; i < agents.Count; i++)
             {
                 if (rng.NextDouble() < probability)
@@ -993,6 +1039,7 @@ namespace Main
             }
         }
     }
+    
     internal class FA
     {
 

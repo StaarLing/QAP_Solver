@@ -27,13 +27,22 @@ namespace Main
         private async void button1_Click(object sender, EventArgs e)
         {
             Solver solver = new Solver();
-            List<Solver> solvers = new List<Solver>();
             List<int> alg = checkedListBoxAlg.CheckedIndices.Cast<int>().ToList();
-            solvers = await solver.GetAlgAsync(alg, qapTask, algParam, label2, progressBar1);
+            List<Solver> solvers = await solver.GetAlgAsync(alg, qapTask, algParam, label2, progressBar1);
 
             List<int> paramRes = checkedListBoxSolve.CheckedIndices.Cast<int>().ToList();
             Result result = new Result(solvers, paramRes);
-            progressBar1.ForeColor = Color.Blue;
+            if (paramRes.Contains(2))
+            {
+                Stopwatch timer = new Stopwatch();
+                timer.Start();
+                BruteForceSolver bruteForceSolver = new BruteForceSolver();
+                Solver solv = bruteForceSolver.Solve(qapTask);
+                timer.Stop();
+                solv.Time = (timer.ElapsedMilliseconds);
+                solv.NameAlg = "Полный перебор";
+                result.solvers.Add(solv);
+            }
             if (paramRes.Contains(0))
             {
                 // Создаем новый экземпляр диалога выбора пути
@@ -47,18 +56,6 @@ namespace Main
                     {
                         // Получаем выбранный пользователем путь
                         string selectedPath = folderDialog.SelectedPath;
-
-                        if(paramRes.Contains(2))
-                        {
-                            Stopwatch timer = new Stopwatch();
-                            timer.Start();
-                            BruteForceSolver bruteForceSolver = new BruteForceSolver();
-                            Solver solv = bruteForceSolver.Solve(qapTask);
-                            timer.Stop();
-                            solv.Time = (timer.ElapsedMilliseconds);
-                            solv.NameAlg = "Полный перебор";
-                            result.solvers.Add(solv);
-                        }
                         result.Print(selectedPath);
                     }
                 }
